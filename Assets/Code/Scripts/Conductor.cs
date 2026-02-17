@@ -1,5 +1,4 @@
 using UnityEngine;
-using static TreeEditor.TreeEditorHelper;
 
 public class Conductor : MonoBehaviour
 {
@@ -13,11 +12,11 @@ public class Conductor : MonoBehaviour
 	/// <summary>
 	/// The number of beats in each bar (time signature numerator)
 	/// </summary>
-	public int beatsPerBar;
+	public int beatsPerBar = 4;
 	/// <summary>
 	/// The type of note that gets one beat (time signature denominator)
 	/// </summary>
-	public int beatNoteType;
+	public int beatNoteType = 4;
 
 	/// <summary>
 	/// 
@@ -119,7 +118,7 @@ public class Conductor : MonoBehaviour
 	/// <returns>
 	/// A float representing the percentage of the current beat that has passed, ranging from 0 to 1.
 	/// </returns>
-	public float GetBeatPercent(int noteType, bool truncateBeats=false)
+	public float GetBeatPercent(int noteType, bool truncateBeats = false)
 	{
 		float beatLength = GetBeatLength(noteType);
 		if (truncateBeats)
@@ -149,5 +148,20 @@ public class Conductor : MonoBehaviour
 			return Mathf.FloorToInt((songPosition % barLength) / beatLength) + (beatsOfTypePerBar * barNumber);
 		}
 		return Mathf.FloorToInt(songPosition / beatLength);
+	}
+
+	public float GetLastBeatPos(int noteType, bool truncateBeats = false)
+	{
+		float beatLength = GetBeatLength(noteType);
+
+		float lastBeatPos = beatLength * GetBeatNumber(noteType);	// 
+		if (truncateBeats)
+		{
+			lastBeatPos = barLength * barNumber;     // Start at bar position
+
+		}
+
+
+		return lastBeatPos;
 	}
 }

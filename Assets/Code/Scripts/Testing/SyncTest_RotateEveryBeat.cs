@@ -5,8 +5,8 @@ public class SyncTest_RotateEveryBeat : MonoBehaviour
     public Conductor conductor;
 	public int noteType = 4;
 	public int beatNumber;
-	public float beatPercent;
-	public bool snapToBar;
+	// public float beatPercent;
+	public bool truncateBeats;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -20,9 +20,9 @@ public class SyncTest_RotateEveryBeat : MonoBehaviour
     // Update is called once per frame
     void Update()
 	{
-		beatPercent = conductor.GetBeatPercent(noteType, snapToBar);
+		// beatPercent = conductor.GetBeatPercent(noteType, truncateBeats);
 
-		if (beatNumber < conductor.GetBeatNumber(noteType, snapToBar))
+		if (beatNumber < conductor.GetBeatNumber(noteType, truncateBeats))
 		{
 			beatNumber++;
 			UpdateOnBeat();
