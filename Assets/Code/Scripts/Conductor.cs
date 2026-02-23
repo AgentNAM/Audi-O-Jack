@@ -10,19 +10,19 @@ public class Conductor : MonoBehaviour
 	/// <summary>The speed of the current song, written in quarter notes per minute.</summary>
 	private float _tempo;
 	/// <summary>The number of beats in each bar. (Time signature numerator)</summary>
-	private int _beatsPerBar;
+	private int _timeSigHi;
 	/// <summary>The type of note that gets one beat. (Time signature denominator)</summary>
-	private int _beatNoteType;
+	private int _timeSigLo;
 	/// <summary></summary>
 	private float _offset;
 
-	/// <summary></summary>
-	public float songPosition;
+	/// <summary>Returns the current time of the song.</summary>
+	public float songTime;
 
 	/// <summary></summary>
 	public float timeSignature
 	{
-		get { return (float)_beatsPerBar / (float)_beatNoteType; }
+		get { return (float)_timeSigHi / (float)_timeSigLo; }
 	}
 
 	/// <summary>Time duration of one bar</summary>
@@ -34,13 +34,13 @@ public class Conductor : MonoBehaviour
 	/// <summary>Percentage of the current bar that has passed</summary>
 	public float barPercent
 	{
-		get { return (songPosition % barLength) / barLength; }
+		get { return (songTime % barLength) / barLength; }
 	}
 
 	/// <summary>Number of bars that has passed</summary>
 	public int barNumber
 	{
-		get { return Mathf.FloorToInt(songPosition / barLength); }
+		get { return Mathf.FloorToInt(songTime / barLength); }
 	}
 
 
@@ -53,8 +53,8 @@ public class Conductor : MonoBehaviour
 		_audioSource.clip = songData.clip;
 
 		_tempo = songData.tempo;
-		_beatsPerBar = songData.timeSigHi;
-		_beatNoteType = songData.timeSigLo;
+		_timeSigHi = songData.timeSigHi;
+		_timeSigLo = songData.timeSigLo;
 		_offset = songData.offset;
 
 		// Play song & record dspTime
@@ -66,28 +66,20 @@ public class Conductor : MonoBehaviour
     void Update()
 	{
 		// Update song position
-		songPosition = (float)(AudioSettings.dspTime - _dspTimeSong) * _audioSource.pitch - _offset;
+		songTime = (float)(AudioSettings.dspTime - _dspTimeSong) * _audioSource.pitch - _offset;
 	}
 
 	public void DisplaySongInfo()
 	{
 		Debug.Log($"Tempo: {_tempo}");
-		Debug.Log($"Time Signature: {_beatsPerBar}/{_beatNoteType}");
+		Debug.Log($"Time Signature: {_timeSigHi}/{_timeSigLo}");
 		Debug.Log($"Bar Duration: {barLength}");
-		Debug.Log($"Beat Duration: {barLength / _beatsPerBar}");
+		Debug.Log($"Beat Duration: {barLength / _timeSigHi}");
 		Debug.Log($"Duration of 1/8 note: {GetBeatLength(8)}");
 	}
 
 	/// <summary>
 	/// Returns the time duration of one beat, given the type of note that one beat represents.
-	/// <example>
-	/// For example:
-	/// <code>
-	/// GetBeatLength(4) // Returns the time duration of a quarter note
-	/// GetBeatLength(8) // Returns the time duration of an eighth note
-	/// GetBeatLength(16) // Returns the time duration of a sixteenth note
-	/// </code>
-	/// </example>
 	/// </summary>
 	/// <param name="noteType">
 	/// The type of note that this beat represents.
@@ -98,7 +90,7 @@ public class Conductor : MonoBehaviour
 	/// </returns>
 	public float GetBeatLength(int noteType)
 	{
-		return (barLength / _beatsPerBar) * ((float)_beatNoteType / noteType);
+		return (barLength / _timeSigHi) * ((float)_timeSigLo / noteType);
 	}
 
 	/// <summary>
@@ -118,9 +110,9 @@ public class Conductor : MonoBehaviour
 		if (truncateBeats)
 		{
 			int beatsOfTypePerBar = Mathf.CeilToInt(barLength / beatLength);
-			return Mathf.FloorToInt((songPosition % barLength) / beatLength) + (beatsOfTypePerBar * barNumber);
+			return Mathf.FloorToInt((songTime % barLength) / beatLength) + (beatsOfTypePerBar * barNumber);
 		}
-		return Mathf.FloorToInt(songPosition / beatLength);
+		return Mathf.FloorToInt(songTime / beatLength);
 	}
 
 	/// <summary>
@@ -141,8 +133,8 @@ public class Conductor : MonoBehaviour
 		float beatLength = GetBeatLength(noteType);
 		if (truncateBeats)
 		{
-			return ((songPosition % barLength) % beatLength) / beatLength;
+			return ((songTime % barLength) % beatLength) / beatLength;
 		}
-		return (songPosition % beatLength) / beatLength;
+		return (songTime % beatLength) / beatLength;
 	}
 }

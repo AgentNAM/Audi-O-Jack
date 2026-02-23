@@ -1,15 +1,20 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerInputHandler : MonoBehaviour
 {
     public Conductor conductor;
-    public GameObject controllable;
+    public GameObject controlledObj;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+	private IEnumerator passMoveInput;
+	private IEnumerator passJumpInput;
+	private IEnumerator passGrappleInput;
+
+	// Start is called once before the first execution of Update after the MonoBehaviour is created
+	void Start()
     {
-        
+		passMoveInput = PassMoveInput();
     }
 
     // Update is called once per frame
@@ -18,37 +23,56 @@ public class PlayerInputHandler : MonoBehaviour
         
     }
 
-    public void OnMove(InputAction.CallbackContext context)
-    {
-        Vector2 moveInput = context.ReadValue<Vector2>();
+	// Passes movement input into the controlled object
+    public void OnMoveChanged(InputAction.CallbackContext context)
+	{
+		// 
+		InputActionPhase phase = context.phase;
+		Vector2 inputDir = context.ReadValue<Vector2>();
+		Debug.Log($"Passing Move Input...		phase={phase}, inputDir={inputDir}");
 
-        IMoveControllable moveControllable = controllable.GetComponent<IMoveControllable>();
-        if (moveControllable != null)
-        {
-            moveControllable.ProcessMoveInput(moveInput);
-        }
+		/*
+		Vector2 inputDir = context.ReadValue<Vector2>();
+		if (phase == InputActionPhase.Started)
+		{
+
+		}
+
+		*/
+
+		if (controlledObj.TryGetComponent<IMoveControllable>(out var moveControllable))
+		{
+			//
+			moveControllable.ProcessMoveInput(inputDir);
+
+		}
 	}
 
-	public void OnJump(InputAction.CallbackContext context)
+	private IEnumerator PassMoveInput()
 	{
-		InputActionPhase phase = context.phase;
-		float timeRaw = conductor.songPosition;
+		yield return null;
+	}
 
-		IJumpControllable jumpControllable = controllable.GetComponent<IJumpControllable>();
-		if (jumpControllable != null)
+	// Passes jump input into the controlled object
+	public void OnJumpChanged(InputAction.CallbackContext context)
+	{
+		if (controlledObj.TryGetComponent<IJumpControllable>(out var jumpControllable))
 		{
+			InputActionPhase phase = context.phase;
+			float timeRaw = conductor.songTime;
+
 			jumpControllable.ProcessJumpInput(phase, timeRaw);
 		}
 	}
 
-	public void OnGrapple(InputAction.CallbackContext context)
+	// Passes grapple input into the controlled object
+	public void OnGrappleChanged(InputAction.CallbackContext context)
 	{
-		InputActionPhase phase = context.phase;
-		float timeRaw = conductor.songPosition;
-
-		IGrappleControllable grappleControllable = controllable.GetComponent<IGrappleControllable>();
-		if (grappleControllable != null)
+		if (controlledObj.TryGetComponent<IGrappleControllable>(out var grappleControllable))
 		{
+			InputActionPhase phase = context.phase;
+			float timeRaw = conductor.songTime;
+
 			grappleControllable.ProcessGrappleInput(phase, timeRaw);
 		}
 	}

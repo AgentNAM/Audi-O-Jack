@@ -166,7 +166,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 125623794}
         m_TargetAssemblyTypeName: PlayerInputHandler, Assembly-CSharp
-        m_MethodName: OnMove
+        m_MethodName: OnMoveChanged
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -182,7 +182,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 125623794}
         m_TargetAssemblyTypeName: PlayerInputHandler, Assembly-CSharp
-        m_MethodName: OnJump
+        m_MethodName: OnJumpChanged
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -198,7 +198,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 125623794}
         m_TargetAssemblyTypeName: PlayerInputHandler, Assembly-CSharp
-        m_MethodName: OnGrapple
+        m_MethodName: OnGrappleChanged
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -251,7 +251,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInputHandler
   conductor: {fileID: 780787124}
-  controllable: {fileID: 1298743295}
+  controlledObj: {fileID: 1298743295}
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -822,7 +822,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   songData: {fileID: 11400000, guid: 604c07abda7d0ee4292730415f91969b, type: 2}
-  songPosition: 0
+  songTime: 0
 --- !u!82 &780787125
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1001,6 +1001,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd9c7661854c478409caf14a2e3bea21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InputTest_ReadInputs
+  conductor: {fileID: 0}
+  moveSpeed: 1
 --- !u!136 &1298743297
 CapsuleCollider:
   m_ObjectHideFlags: 0
