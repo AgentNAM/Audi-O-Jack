@@ -269,8 +269,9 @@ GameObject:
   - component: {fileID: 365995080}
   - component: {fileID: 365995079}
   - component: {fileID: 365995078}
+  - component: {fileID: 365995083}
   m_Layer: 0
-  m_Name: InputTest
+  m_Name: SyncTest_Inputs
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -306,7 +307,19 @@ MonoBehaviour:
     m_ActionId: 04b25192-c8f3-4f50-9012-34423b79e110
     m_ActionName: 'Gameplay/Move[/Keyboard/upArrow,/Keyboard/downArrow,/Keyboard/leftArrow,/Keyboard/rightArrow]'
   - m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 365995083}
+        m_TargetAssemblyTypeName: SyncTest_Inputs, Assembly-CSharp
+        m_MethodName: OnJumpChanged
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_ActionId: a94483af-23f8-4734-86af-83030fe3f328
     m_ActionName: 'Gameplay/Jump[/Keyboard/space]'
   - m_PersistentCalls:
@@ -421,6 +434,28 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &365995083
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 365995077}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7787539e54a6f4da5fdf88d6298229, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SyncTest_Inputs
+  conductor: {fileID: 780787124}
+  q1:
+    conductor: {fileID: 0}
+    beatNoteType: 4
+  q2:
+    conductor: {fileID: 0}
+    beatNoteType: 16
+  offsetPerBeat: {x: 0, y: 1, z: 0}
+  lastJumpPhase: 0
+  jumpPhase: 0
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -562,7 +597,7 @@ GameObject:
   - component: {fileID: 743416154}
   - component: {fileID: 743416158}
   m_Layer: 0
-  m_Name: SyncTest
+  m_Name: SyncTest_Rotate
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -674,10 +709,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SyncTest_RotateEveryBeat
   conductor: {fileID: 780787124}
-  noteType: 8
+  q1:
+    conductor: {fileID: 780787124}
+    beatNoteType: 4
   beatNumber: 0
-  beatPercent: 0
-  snapToBar: 1
 --- !u!1 &744510754
 GameObject:
   m_ObjectHideFlags: 0
@@ -692,7 +727,7 @@ GameObject:
   - component: {fileID: 744510756}
   - component: {fileID: 744510755}
   m_Layer: 0
-  m_Name: SyncTest (1)
+  m_Name: SyncTest_Rotate (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -711,10 +746,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SyncTest_RotateEveryBeat
   conductor: {fileID: 780787124}
-  noteType: 16
+  q1:
+    conductor: {fileID: 780787124}
+    beatNoteType: 8
   beatNumber: 0
-  beatPercent: 0
-  snapToBar: 1
 --- !u!65 &744510756
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -853,8 +888,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79685cd2db564124eaa2fd87926dde89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  songData: {fileID: 11400000, guid: 604c07abda7d0ee4292730415f91969b, type: 2}
-  songPosition: 0
+  songData: {fileID: 11400000, guid: d0baec6893b463a4e8b572218d5c6731, type: 2}
+  songTime: 0
 --- !u!82 &780787125
 AudioSource:
   m_ObjectHideFlags: 0
@@ -866,7 +901,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 0}
+  m_Resource: {fileID: 8300000, guid: 57c61eba81e953847bdb14e35e8d3f92, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 0.1
   m_Pitch: 1

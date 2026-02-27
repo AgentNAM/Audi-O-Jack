@@ -16,4 +16,4 @@ MonoBehaviour:
   tempo: 60
   timeSigHi: 4
   timeSigLo: 4
-  offset: 0.1
+  offset: 0.15
