@@ -22,7 +22,7 @@ public class SyncTest_RotateEveryBeat : MonoBehaviour
     // Update is called once per frame
     void Update()
 	{
-		if (beatNumber < q1.GetBeatNumber(conductor.songTime))
+		if (beatNumber < q1.SecondsToBeats(conductor.songPos))
 		{
 			beatNumber++;
 			UpdateOnBeat();
@@ -31,9 +31,11 @@ public class SyncTest_RotateEveryBeat : MonoBehaviour
 
 	void UpdateOnBeat()
 	{
-		float beatToBarRatio = (float)(q1.beatNoteType * conductor.TimeSignature);
-		float amountToRotate = 180f / beatToBarRatio;
-		transform.Rotate(0, 0, amountToRotate);
+		transform.Rotate(0, 0, 90);
+
+		//float beatToBarRatio = (float)(q1.beatNoteType * conductor.TimeSignature);
+		//float amountToRotate = 180f / beatToBarRatio;
+		//transform.Rotate(0, 0, amountToRotate);
 		// Debug.Log(amountToRotate);
 		// Debug.Log(q1.BeatLength);
 
