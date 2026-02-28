@@ -10,53 +10,56 @@ public class Conductor : MonoBehaviour
 	/// <summary>The speed of the current song, written in quarter notes per minute.</summary>
 	private float _tempo;
 	/// <summary>The number of beats in each bar. (Time signature numerator)</summary>
-	private int _beatsPerBar;
+	private int _tsNotesPerBar;
 	/// <summary>The type of note that gets one beat. (Time signature denominator)</summary>
-	private int _beatNoteType;
-	/// <summary></summary>
+	private int _tsNoteValue;
+	/// <summary>This song's time signature, represented as a ratio. (Notes Per Bar / Note Value)</summary>
+	private float _tsRatio;
+	/// <summary>The time in seconds before the first beat occurs.</summary>
 	private float _offset;
 
-	/// <summary></summary>
-	public float songPosition;
+	/// <summary>The amount of time, in seconds, since the song began.</summary>
+	public float songPos;
+	/// <summary>The amount of time, in bars, since the song began.</summary>
+	public float songPosInBars;
 
-	/// <summary></summary>
-	public float timeSignature
+	/// <summary>
+	/// The time duration, in seconds, of one bar.
+	/// </summary>
+	/// <remarks>
+	/// (60 seconds per minute / quarter notes per minute) = seconds per quarter note
+	/// <br/>
+	/// seconds per quarter note * 4 = seconds per whole note
+	/// <br/>
+	/// seconds per whole note * TimeSignature = seconds per bar
+	/// </remarks>
+	public float SecondsPerBar => (60 / _tempo) * 4 * _tsRatio;
+
+
+	//public float SongPosInSeconds => ((float)(AudioSettings.dspTime - _dspTimeSong) * _audioSource.pitch) - _offset;
+	//public float SongPosInBars => SongPosInSeconds / SecondsPerBar;
+
+
+	// Awake is called when the script instance is being loaded
+	void Awake()
 	{
-		get { return (float)_beatsPerBar / (float)_beatNoteType; }
-	}
-
-	/// <summary>Time duration of one bar</summary>
-	public float barLength
-	{
-		get { return (60 / _tempo) * timeSignature * 4; }
-	}
-
-	/// <summary>Percentage of the current bar that has passed</summary>
-	public float barPercent
-	{
-		get { return (songPosition % barLength) / barLength; }
-	}
-
-	/// <summary>Number of bars that has passed</summary>
-	public int barNumber
-	{
-		get { return Mathf.FloorToInt(songPosition / barLength); }
-	}
-
-
-	// Start is called once before the first execution of Update after the MonoBehaviour is created
-	void Start()
-    {
         // Initialize _audioSource
         _audioSource = GetComponent<AudioSource>();
 
 		_audioSource.clip = songData.clip;
 
 		_tempo = songData.tempo;
-		_beatsPerBar = songData.timeSigHi;
-		_beatNoteType = songData.timeSigLo;
-		_offset = songData.offset;
 
+		_tsNotesPerBar = songData.timeSigHi;
+		_tsNoteValue = songData.timeSigLo;
+		_tsRatio = _tsNotesPerBar / (float)_tsNoteValue;
+
+		_offset = songData.offset;
+	}
+
+	// Start is called once before the first execution of Update after the MonoBehaviour is created
+	void Start()
+    {
 		// Play song & record dspTime
 		_audioSource.Play();
         _dspTimeSong = AudioSettings.dspTime;
@@ -65,42 +68,68 @@ public class Conductor : MonoBehaviour
     // Update is called once per frame
     void Update()
 	{
-		// Update song position
-		songPosition = (float)(AudioSettings.dspTime - _dspTimeSong) * _audioSource.pitch - _offset;
+		// Calculate song position in seconds
+		songPos = (float)(AudioSettings.dspTime - _dspTimeSong) * _audioSource.pitch - _offset;
+		// Calculate song position in bars
+		songPosInBars = songPos / SecondsPerBar;
 	}
 
 	public void DisplaySongInfo()
 	{
 		Debug.Log($"Tempo: {_tempo}");
-		Debug.Log($"Time Signature: {_beatsPerBar}/{_beatNoteType}");
-		Debug.Log($"Bar Duration: {barLength}");
-		Debug.Log($"Beat Duration: {barLength / _beatsPerBar}");
-		Debug.Log($"Duration of 1/8 note: {GetBeatLength(8)}");
+		Debug.Log($"Time Signature: {_tsNotesPerBar}/{_tsNoteValue}");
+		Debug.Log($"Bar Duration: {SecondsPerBar}");
+		Debug.Log($"Note Duration: {SecondsPerBar / _tsNotesPerBar}");
 	}
 
 	/// <summary>
-	/// Returns the time duration of one beat, given the type of note that one beat represents.
-	/// <example>
-	/// For example:
-	/// <code>
-	/// GetBeatLength(4) // Returns the time duration of a quarter note
-	/// GetBeatLength(8) // Returns the time duration of an eighth note
-	/// GetBeatLength(16) // Returns the time duration of a sixteenth note
-	/// </code>
-	/// </example>
+	/// Converts time in seconds to time in bars.
 	/// </summary>
-	/// <param name="noteType">
+	/// <param name="timeInSeconds"></param>
+	/// <returns></returns>
+	public float SecondsToBars(float timeInSeconds)
+	{
+		return timeInSeconds / SecondsPerBar;
+	}
+
+	/// <summary>
+	/// Converts time in bars to time in seconds.
+	/// </summary>
+	/// <param name="timeInBars"></param>
+	/// <returns></returns>
+	public float BarsToSeconds(float timeInBars)
+	{
+		return timeInBars * SecondsPerBar;
+	}
+
+	/// <summary>
+	/// Returns the time duration in seconds of one beat with a specified note value.
+	/// <br/>
+	/// For example:
+	/// <br/>
+	/// GetBeatLength(4) // Returns the time duration of a quarter note
+	/// <br/>
+	/// GetBeatLength(8) // Returns the time duration of an eighth note
+	/// <br/>
+	/// GetBeatLength(16) // Returns the time duration of a sixteenth note
+	/// </summary>
+	/// <param name="beatNoteValue">
 	/// The type of note that this beat represents.
 	/// (=4 for quarter notes, =8 for eighth notes, =16 for sixteenth notes, etc.)
 	/// </param>
 	/// <returns>
 	/// A float representing the time duration of one beat
 	/// </returns>
-	public float GetBeatLength(int noteType)
+	public float GetBeatLength(int beatNoteValue)
 	{
-		return (barLength / _beatsPerBar) * ((float)_beatNoteType / noteType);
+		return SecondsPerBar / (beatNoteValue * _tsRatio);
 	}
 
+
+
+
+
+	/*
 	/// <summary>
 	/// Returns the number of beats that have passed, given the type of note that one beat represents.
 	/// </summary>
@@ -117,10 +146,10 @@ public class Conductor : MonoBehaviour
 		float beatLength = GetBeatLength(noteType);
 		if (truncateBeats)
 		{
-			int beatsOfTypePerBar = Mathf.CeilToInt(barLength / beatLength);
-			return Mathf.FloorToInt((songPosition % barLength) / beatLength) + (beatsOfTypePerBar * barNumber);
+			int beatsOfTypePerBar = Mathf.CeilToInt(SecondsPerBar / beatLength);
+			return Mathf.FloorToInt((songTime % SecondsPerBar) / beatLength) + (beatsOfTypePerBar * BarNumber);
 		}
-		return Mathf.FloorToInt(songPosition / beatLength);
+		return Mathf.FloorToInt(songTime / beatLength);
 	}
 
 	/// <summary>
@@ -141,8 +170,9 @@ public class Conductor : MonoBehaviour
 		float beatLength = GetBeatLength(noteType);
 		if (truncateBeats)
 		{
-			return ((songPosition % barLength) % beatLength) / beatLength;
+			return ((songTime % SecondsPerBar) % beatLength) / beatLength;
 		}
-		return (songPosition % beatLength) / beatLength;
+		return (songTime % beatLength) / beatLength;
 	}
+	*/
 }
