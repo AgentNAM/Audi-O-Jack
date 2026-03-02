@@ -16,20 +16,22 @@ public class SyncTest_RotateEveryBeat : MonoBehaviour
 	// Start is called once before the first execution of Update after the MonoBehaviour is created
 	void Start()
 	{
+		q1.TasksToPerform += SpinOnBeat;
 
+		StartCoroutine(q1.UpdateOnBeat());
 	}
 
     // Update is called once per frame
     void Update()
 	{
-		if (beatNumber < q1.SecondsToBeats(conductor.songPos))
-		{
-			beatNumber++;
-			UpdateOnBeat();
-		}
+		//if (beatNumber < q1.SecondsToBeats(conductor.songPos))
+		//{
+		//	beatNumber++;
+		//	q1.TasksToPerform();
+		//}
 	}
 
-	void UpdateOnBeat()
+	void SpinOnBeat()
 	{
 		transform.Rotate(0, 0, 90);
 

@@ -22,18 +22,22 @@ public class Conductor : MonoBehaviour
 	public float songPos;
 	/// <summary>The amount of time, in bars, since the song began.</summary>
 	public float songPosInBars;
+	/// <summary></summary>
+	public float pitchedDeltaTime;
 
-	/// <summary>
+	/*/// <summary>
 	/// The time duration, in seconds, of one bar.
 	/// </summary>
 	/// <remarks>
 	/// (60 seconds per minute / quarter notes per minute) = seconds per quarter note
 	/// <br/>
-	/// seconds per quarter note * 4 = seconds per whole note
+	/// seconds per quarter note *4 = seconds per whole note
 	/// <br/>
-	/// seconds per whole note * TimeSignature = seconds per bar
-	/// </remarks>
-	public float SecondsPerBar => (60 / _tempo) * 4 * _tsRatio;
+	/// seconds per whole note *TimeSignature = seconds per bar
+	/// </remarks>*/
+
+	/// <value>Property <c>BarLength</c> represents the time duration, in seconds, of one bar.</value>
+	public float BarLength => (60 / _tempo) * 4 * _tsRatio;
 
 
 	//public float SongPosInSeconds => ((float)(AudioSettings.dspTime - _dspTimeSong) * _audioSource.pitch) - _offset;
@@ -71,15 +75,21 @@ public class Conductor : MonoBehaviour
 		// Calculate song position in seconds
 		songPos = (float)(AudioSettings.dspTime - _dspTimeSong) * _audioSource.pitch - _offset;
 		// Calculate song position in bars
-		songPosInBars = songPos / SecondsPerBar;
+		songPosInBars = songPos / BarLength;
+
+
+		pitchedDeltaTime = Time.deltaTime * _audioSource.pitch;
+
+		// Debug.Log($"1/Time.deltaTime: {1/Time.deltaTime}");
+		// Debug.Log($"AudioSettings.outputSampleRate: {AudioSettings.outputSampleRate}");
 	}
 
 	public void DisplaySongInfo()
 	{
 		Debug.Log($"Tempo: {_tempo}");
 		Debug.Log($"Time Signature: {_tsNotesPerBar}/{_tsNoteValue}");
-		Debug.Log($"Bar Duration: {SecondsPerBar}");
-		Debug.Log($"Note Duration: {SecondsPerBar / _tsNotesPerBar}");
+		Debug.Log($"Bar Duration: {BarLength}");
+		Debug.Log($"Note Duration: {BarLength / _tsNotesPerBar}");
 	}
 
 	/// <summary>
@@ -89,7 +99,7 @@ public class Conductor : MonoBehaviour
 	/// <returns></returns>
 	public float SecondsToBars(float timeInSeconds)
 	{
-		return timeInSeconds / SecondsPerBar;
+		return timeInSeconds / BarLength;
 	}
 
 	/// <summary>
@@ -99,19 +109,11 @@ public class Conductor : MonoBehaviour
 	/// <returns></returns>
 	public float BarsToSeconds(float timeInBars)
 	{
-		return timeInBars * SecondsPerBar;
+		return timeInBars * BarLength;
 	}
 
 	/// <summary>
 	/// Returns the time duration in seconds of one beat with a specified note value.
-	/// <br/>
-	/// For example:
-	/// <br/>
-	/// GetBeatLength(4) // Returns the time duration of a quarter note
-	/// <br/>
-	/// GetBeatLength(8) // Returns the time duration of an eighth note
-	/// <br/>
-	/// GetBeatLength(16) // Returns the time duration of a sixteenth note
 	/// </summary>
 	/// <param name="beatNoteValue">
 	/// The type of note that this beat represents.
@@ -122,7 +124,7 @@ public class Conductor : MonoBehaviour
 	/// </returns>
 	public float GetBeatLength(int beatNoteValue)
 	{
-		return SecondsPerBar / (beatNoteValue * _tsRatio);
+		return BarLength / (beatNoteValue * _tsRatio);
 	}
 
 

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 /// <summary>
@@ -7,6 +8,7 @@ using UnityEngine;
 [Serializable]
 public class Quantizer
 {
+
 	/// <summary></summary>
 	public Conductor conductor;
 	/// <summary>The type of note that gets one beat.</summary>
@@ -15,10 +17,11 @@ public class Quantizer
 	/// Whether to truncate beats that start and end in different bars.
 	/// (Useful when working with uncommon time signatures, like 7/8)
 	/// </summary>
+	/// <remarks>NOT YET IMPLEMENTED</remarks>
 	public bool truncateBeats;
 
-	/// <summary>The time duration of one beat.</summary>
-	public float SecondsPerBeat => conductor.GetBeatLength(beatNoteType);
+	/// <summary>The time duration, in seconds, of one beat.</summary>
+	public float BeatLength => conductor.GetBeatLength(beatNoteType);
 
 	// Constructor
 	//public Quantizer(Conductor conductor, int beatNoteType)
@@ -27,32 +30,51 @@ public class Quantizer
 	//	this.beatNoteType = beatNoteType;
 	//}
 
+	public delegate void QuantizedTasks();
+	public QuantizedTasks TasksToPerform;
+
+	private float _lastBeatTime;
+
+	public IEnumerator UpdateOnBeat()
+	{
+		while (true)
+		{
+			if (ElapsedBeats(_lastBeatTime) > 1)
+			{
+				_lastBeatTime += BeatLength;
+				TasksToPerform();
+			}
+
+			yield return null;
+		}
+	}
+
 
 	/// <summary>
-	/// Converts time in seconds to time in beats
+	/// Converts <paramref name="timeInSeconds"/> to time in beats
 	/// </summary>
-	/// <param name="timeInSeconds">The time value, in seconds, that we want to convert.</param>
+	/// <param name="timeInSeconds">Time value in seconds to convert.</param>
 	/// <returns></returns>
 	public float SecondsToBeats(float timeInSeconds)
 	{
-		return timeInSeconds / SecondsPerBeat;
+		return timeInSeconds / BeatLength;
 	}
 
 	/// <summary>
-	/// Converts time in beats to time in seconds
+	/// Converts <paramref name="timeInBeats"/> to time in seconds
 	/// </summary>
-	/// <param name="timeInBeats">The time value, in beats, that we want to convert.</param>
+	/// <param name="timeInBeats">Time value in beats to convert.</param>
 	/// <returns></returns>
 	public float BeatsToSeconds(float timeInBeats)
 	{
-		return timeInBeats * SecondsPerBeat;
+		return timeInBeats * BeatLength;
 	}
 
 	/// <summary>
-	/// 
+	/// Returns the greatest multiple of <c>BeatLength</c> smaller than or equal to <paramref name="timeInSeconds"/>.
 	/// </summary>
-	/// <param name="timeInSeconds"></param>
-	/// <returns>The time of the nearest beat, in seconds</returns>
+	/// <param name="timeInSeconds">Time value in seconds to round down.</param>
+	/// <returns>The time of the last beat, in seconds</returns>
 	public float ToLastBeat(float timeInSeconds)
 	{
 		return BeatsToSeconds(
@@ -62,21 +84,36 @@ public class Quantizer
 	}
 
 	/// <summary>
-	/// 
+	/// Returns <paramref name="timeInSeconds"/> rounded to the nearest multiple of <c>BeatLength</c>.
 	/// </summary>
-	/// <param name="timeInSeconds"></param>
-	/// <param name="beatsToOffset"></param>
-	/// <returns></returns>
-	public float OffsetSecondsByBeats(float timeInSeconds, float beatsToOffset)
+	/// <param name="timeInSeconds">Time value in seconds to round.</param>
+	/// <returns>The time of the nearest beat, in seconds</returns>
+	public float ToNearestBeat(float timeInSeconds)
 	{
 		return BeatsToSeconds(
-			SecondsToBeats(timeInSeconds) + beatsToOffset
+			Mathf.Round(SecondsToBeats(timeInSeconds))
 			);
+
+	}
+
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="timeInSeconds">Time value in seconds to offset.</param>
+	/// <param name="beatOffset"></param>
+	/// <returns></returns>
+	public float ShiftByBeats(float timeInSeconds, float beatOffset)
+	{
+		return timeInSeconds + BeatsToSeconds(beatOffset);
 	}
 
 
-
-	public float BeatsSince(float eventTime)
+	/// <summary>
+	/// Returns the elapsed time in beats since <paramref name="eventTime"/>.
+	/// </summary>
+	/// <param name="eventTime">The point in time to start measuring from.</param>
+	/// <returns></returns>
+	public float ElapsedBeats(float eventTime)
 	{
 		return SecondsToBeats(conductor.songPos - eventTime);
 	}
