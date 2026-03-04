@@ -11,148 +11,109 @@ public class Quantizer
 	public Conductor conductor;
 	/// <summary>The type of note that gets one beat.</summary>
 	public int beatNoteType;
+
 	/// <summary>
 	/// Whether to truncate beats that start and end in different bars.
 	/// (Useful when working with uncommon time signatures, like 7/8)
 	/// </summary>
-	public bool truncateBeats;
+	// public bool truncateBeats;
 
 	/// <summary>The time duration of one beat.</summary>
-	public float SecondsPerBeat => conductor.GetBeatLength(beatNoteType);
-
-	// Constructor
-	//public Quantizer(Conductor conductor, int beatNoteType)
-	//{
-	//	this.conductor = conductor;
-	//	this.beatNoteType = beatNoteType;
-	//}
+	public float BeatLength => conductor.GetBeatLength(beatNoteType);
 
 
 	/// <summary>
-	/// Converts time in seconds to time in beats
+	/// Converts <paramref name="timeInSeconds"/> from seconds to beats.
 	/// </summary>
 	/// <param name="timeInSeconds">The time value, in seconds, that we want to convert.</param>
 	/// <returns></returns>
-	public float SecondsToBeats(float timeInSeconds)
+	public float Sec2Beat(float timeInSeconds)
 	{
-		return timeInSeconds / SecondsPerBeat;
+		return timeInSeconds / BeatLength;
 	}
 
 	/// <summary>
-	/// Converts time in beats to time in seconds
+	/// Converts <paramref name="timeInBeats"/> from beats to seconds.
 	/// </summary>
 	/// <param name="timeInBeats">The time value, in beats, that we want to convert.</param>
 	/// <returns></returns>
-	public float BeatsToSeconds(float timeInBeats)
+	public float Beat2Sec(float timeInBeats)
 	{
-		return timeInBeats * SecondsPerBeat;
+		return timeInBeats * BeatLength;
 	}
 
 	/// <summary>
-	/// 
+	/// Returns the largest multiple of <c>this.BeatLength</c> smaller than or equal to <paramref name="timeInSeconds"/>
 	/// </summary>
-	/// <param name="timeInSeconds"></param>
-	/// <returns>The time of the nearest beat, in seconds</returns>
-	public float ToLastBeat(float timeInSeconds)
+	/// <param name="timeInSeconds">Time value to round down.</param>
+	/// <returns>The time of the last beat, in seconds.</returns>
+	public float FloorToBeat(float timeInSeconds)
 	{
-		return BeatsToSeconds(
-			Mathf.Floor(SecondsToBeats(timeInSeconds))
-			);
-
-	}
-
-	/// <summary>
-	/// 
-	/// </summary>
-	/// <param name="timeInSeconds"></param>
-	/// <param name="beatsToOffset"></param>
-	/// <returns></returns>
-	public float OffsetSecondsByBeats(float timeInSeconds, float beatsToOffset)
-	{
-		return BeatsToSeconds(
-			SecondsToBeats(timeInSeconds) + beatsToOffset
+		return Beat2Sec(
+			Mathf.Floor(Sec2Beat(timeInSeconds))
 			);
 	}
 
-
-
-	public float BeatsSince(float eventTime)
-	{
-		return SecondsToBeats(conductor.songPos - eventTime);
-	}
-
-
-	//public float BeatsToSeconds(int beatNumber)
-	//{
-	//	return beatNumber * BeatLength;
-	//}
-
-
-	//public float SnapTimeToBeat(float timeRaw, int beatsToAdd = 0)
-	//{
-	//	return BeatsToSeconds(SecondsToBeats(timeRaw) + beatsToAdd);
-	//}
-
-
-	/*
 	/// <summary>
-	/// 
+	/// Returns <paramref name="timeInSeconds"/> rounded to the nearest multiple of <c>this.BeatLength</c>
 	/// </summary>
-	/// <param name="timeRaw"></param>
-	/// <returns></returns>
-	public float GetLastBeatTime(float timeRaw)
+	/// <param name="timeInSeconds">Time value to round.</param>
+	/// <returns>The time of the nearest beat, in seconds.</returns>
+	public float RoundToBeat(float timeInSeconds)
 	{
-		int beatNumber = GetBeatNumber(timeRaw);
-		if (truncateBeats)
-		{
-			int beatsPerBar = Mathf.CeilToInt(conductor.BarLength / BeatLength);
-			int finishedBeatsInCurrentBar = Mathf.FloorToInt((timeRaw % conductor.BarLength) / BeatLength);
-		}
-		return beatNumber * BeatLength;
+		return Beat2Sec(
+			Mathf.Round(Sec2Beat(timeInSeconds))
+			);
 	}
 
 	/// <summary>
-	/// 
+	/// Returns the smallest multiple of <c>this.BeatLength</c> greater than or equal to <paramref name="timeInSeconds"/>
 	/// </summary>
-	/// <param name="timeRaw"></param>
-	/// <returns></returns>
-	public float GetNextBeatTime(float timeRaw)
+	/// <param name="timeInSeconds">Time value to round up.</param>
+	/// <returns>The time of the next beat, in seconds.</returns>
+	public float CeilToBeat(float timeInSeconds)
 	{
-		int beatNumber = GetBeatNumber(timeRaw) + 1;
-		return beatNumber * BeatLength;
+		return Beat2Sec(
+			Mathf.Ceil(Sec2Beat(timeInSeconds))
+			);
 	}
 
 	/// <summary>
-	/// 
+	/// Converts <paramref name="beatsToAdd"/> from beats to seconds, then adds the result to <paramref name="timeInSeconds"/>.
 	/// </summary>
-	/// <param name="timeRaw"></param>
+	/// <param name="timeInSeconds"></param>
+	/// <param name="beatsToAdd"></param>
 	/// <returns></returns>
-	public float GetNearestBeatTime(float timeRaw)
+	public float AddBeats(float timeInSeconds, float beatsToAdd)
 	{
-		float lastBeatTime = GetLastBeatTime(timeRaw);
-		float nextBeatTime = GetNextBeatTime(timeRaw);
-		float beatPercent = Mathf.InverseLerp(lastBeatTime, nextBeatTime, timeRaw);
-		if (beatPercent < 0.5f)
-		{
-			// If the last beat was closer
-			return lastBeatTime;
-		}
-		else
-		{
-			// If the next beat was closer
-			return nextBeatTime;
-		}
+		return timeInSeconds + Beat2Sec(beatsToAdd);
 	}
 
 	/// <summary>
-	/// 
+	/// Returns the elapsed time in beats since <paramref name="timeInSeconds"/>.
 	/// </summary>
-	/// <param name="timeRaw"></param>
+	/// <param name="timeInSeconds"></param>
 	/// <returns></returns>
-	public float GetBeatStartTime(float timeRaw)
+	public float BeatsSince(float timeInSeconds)
 	{
-		// TODO: 
-		return 0.1f;
+		return Sec2Beat(conductor.songTime - timeInSeconds);
 	}
-	*/
+
+	/// <summary>
+	/// Returns the elapsed time in beats since the start of the song.
+	/// </summary>
+	/// <returns></returns>
+	public float BeatsSinceStart()
+	{
+		return Sec2Beat(conductor.songTime);
+	}
+
+	/// <summary>
+	/// Returns the elapsed time in beats since the start of the current bar.
+	/// </summary>
+	/// <returns></returns>
+	public float BeatsSinceLastBar()
+	{
+		return Sec2Beat(conductor.songTime - conductor.FloorToBar(conductor.songTime));
+	}
 }

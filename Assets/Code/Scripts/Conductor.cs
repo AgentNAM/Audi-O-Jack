@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[RequireComponent(typeof(AudioSource))]
 public class Conductor : MonoBehaviour
 {
 	public SO_SongData songData;
@@ -19,9 +20,9 @@ public class Conductor : MonoBehaviour
 	private float _offset;
 
 	/// <summary>The amount of time, in seconds, since the song began.</summary>
-	public float songPos;
+	public float songTime;
 	/// <summary>The amount of time, in bars, since the song began.</summary>
-	public float songPosInBars;
+	public float songTimeInBars;
 
 	/// <summary>
 	/// The time duration, in seconds, of one bar.
@@ -33,7 +34,7 @@ public class Conductor : MonoBehaviour
 	/// <br/>
 	/// seconds per whole note * TimeSignature = seconds per bar
 	/// </remarks>
-	public float SecondsPerBar => (60 / _tempo) * 4 * _tsRatio;
+	public float BarLength => (60 / _tempo) * 4 * _tsRatio;
 
 
 	//public float SongPosInSeconds => ((float)(AudioSettings.dspTime - _dspTimeSong) * _audioSource.pitch) - _offset;
@@ -46,8 +47,10 @@ public class Conductor : MonoBehaviour
         // Initialize _audioSource
         _audioSource = GetComponent<AudioSource>();
 
+		// Set audio source clip
 		_audioSource.clip = songData.clip;
 
+		// Initialize conductor variables
 		_tempo = songData.tempo;
 
 		_tsNotesPerBar = songData.timeSigHi;
@@ -60,7 +63,7 @@ public class Conductor : MonoBehaviour
 	// Start is called once before the first execution of Update after the MonoBehaviour is created
 	void Start()
     {
-		// Play song & record dspTime
+		// Play song and record dspTime
 		_audioSource.Play();
         _dspTimeSong = AudioSettings.dspTime;
 	}
@@ -69,60 +72,91 @@ public class Conductor : MonoBehaviour
     void Update()
 	{
 		// Calculate song position in seconds
-		songPos = (float)(AudioSettings.dspTime - _dspTimeSong) * _audioSource.pitch - _offset;
+		songTime = (float)(AudioSettings.dspTime - _dspTimeSong) * _audioSource.pitch - _offset;
 		// Calculate song position in bars
-		songPosInBars = songPos / SecondsPerBar;
+		songTimeInBars = songTime / BarLength;
 	}
 
 	public void DisplaySongInfo()
 	{
 		Debug.Log($"Tempo: {_tempo}");
 		Debug.Log($"Time Signature: {_tsNotesPerBar}/{_tsNoteValue}");
-		Debug.Log($"Bar Duration: {SecondsPerBar}");
-		Debug.Log($"Note Duration: {SecondsPerBar / _tsNotesPerBar}");
+		Debug.Log($"Bar Duration: {BarLength}");
+		Debug.Log($"Note Duration: {BarLength / _tsNotesPerBar}");
 	}
 
 	/// <summary>
-	/// Converts time in seconds to time in bars.
+	/// Converts <paramref name="timeInSeconds"/> from seconds to bars.
 	/// </summary>
 	/// <param name="timeInSeconds"></param>
 	/// <returns></returns>
-	public float SecondsToBars(float timeInSeconds)
+	public float Sec2Bar(float timeInSeconds)
 	{
-		return timeInSeconds / SecondsPerBar;
+		return timeInSeconds / BarLength;
 	}
 
 	/// <summary>
-	/// Converts time in bars to time in seconds.
+	/// Converts <paramref name="timeInBars"/> from bars to seconds.
 	/// </summary>
 	/// <param name="timeInBars"></param>
 	/// <returns></returns>
-	public float BarsToSeconds(float timeInBars)
+	public float Bar2Sec(float timeInBars)
 	{
-		return timeInBars * SecondsPerBar;
+		return timeInBars * BarLength;
+	}
+
+
+	/// <summary>
+	/// Returns the largest multiple of <c>this.BarLength</c> smaller than or equal to <paramref name="timeInSeconds"/>
+	/// </summary>
+	/// <param name="timeInSeconds">Time value to round down.</param>
+	/// <returns>The time of the last bar, in seconds.</returns>
+	public float FloorToBar(float timeInSeconds)
+	{
+		return Bar2Sec(
+			Mathf.Floor(Sec2Bar(timeInSeconds))
+			);
 	}
 
 	/// <summary>
+	/// Returns <paramref name="timeInSeconds"/> rounded to the nearest multiple of <c>this.BarLength</c>
+	/// </summary>
+	/// <param name="timeInSeconds">Time value to round.</param>
+	/// <returns>The time of the nearest bar, in seconds.</returns>
+	public float RoundToBar(float timeInSeconds)
+	{
+		return Bar2Sec(
+			Mathf.Round(Sec2Bar(timeInSeconds))
+			);
+	}
+
+	/// <summary>
+	/// Returns the smallest multiple of <c>this.BarLength</c> greater than or equal to <paramref name="timeInSeconds"/>
+	/// </summary>
+	/// <param name="timeInSeconds">Time value to round up.</param>
+	/// <returns>The time of the next bar, in seconds.</returns>
+	public float CeilToBar(float timeInSeconds)
+	{
+		return Bar2Sec(
+			Mathf.Ceil(Sec2Bar(timeInSeconds))
+			);
+	}
+
+
+
+	/// <summary>
 	/// Returns the time duration in seconds of one beat with a specified note value.
-	/// <br/>
-	/// For example:
-	/// <br/>
-	/// GetBeatLength(4) // Returns the time duration of a quarter note
-	/// <br/>
-	/// GetBeatLength(8) // Returns the time duration of an eighth note
-	/// <br/>
-	/// GetBeatLength(16) // Returns the time duration of a sixteenth note
 	/// </summary>
 	/// <param name="beatNoteValue">
 	/// The type of note that this beat represents.
 	/// (=4 for quarter notes, =8 for eighth notes, =16 for sixteenth notes, etc.)
 	/// </param>
 	/// <returns>
-	/// A float representing the time duration of one beat
+	/// A float representing the time duration of one beat.
 	/// </returns>
 	public float GetBeatLength(int beatNoteValue)
 	{
-		return SecondsPerBar / (beatNoteValue * _tsRatio);
+		return BarLength / (beatNoteValue * _tsRatio);
 	}
 
 

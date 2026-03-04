@@ -70,16 +70,16 @@ public class SyncTest_Inputs : MonoBehaviour
 		jumpDuration = lastHitEnd - lastHitRaw;
 		if (jumpDuration > 0)
 		{
-			_deltaPos.y = ((conductor.songPos - lastHitRaw) / jumpDuration) * jumpDistPerBeat;
+			_deltaPos.y = ((conductor.songTime - lastHitRaw) / jumpDuration) * jumpDistPerBeat;
 
-			if (conductor.songPos > lastHitEnd)
+			if (conductor.songTime > lastHitEnd)
 			{
 				_deltaPos.y = 0;
 				_lastHitPos.y += jumpDistPerBeat;
 
-				lastHitRaw = conductor.songPos;
-				lastHit = q2.ToLastBeat(lastHitRaw);
-				lastHitEnd = q2.OffsetSecondsByBeats(lastHit, 1.1f);
+				lastHitRaw = conductor.songTime;
+				lastHit = q2.FloorToBeat(lastHitRaw);
+				lastHitEnd = q2.AddBeats(lastHit, 1.1f);
 			}
 		}
 
@@ -109,9 +109,9 @@ public class SyncTest_Inputs : MonoBehaviour
     {
 		if (context.phase == InputActionPhase.Started)
 		{
-			lastHitRaw = conductor.songPos;
-			lastHit = q1.ToLastBeat(lastHitRaw);
-			lastHitEnd = q1.OffsetSecondsByBeats(lastHit, 1.1f);
+			lastHitRaw = conductor.songTime;
+			lastHit = q1.FloorToBeat(lastHitRaw);
+			lastHitEnd = q1.AddBeats(lastHit, 1.1f);
 
 			// Record our position at the time the jump button was pressed
 			_lastHitPos = transform.position;
