@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[RequireComponent(typeof(CharacterController))]
 public class PlayerPawn : MonoBehaviour
 {
 	// Variables for our conductor and quantizers
@@ -43,6 +44,11 @@ public class PlayerPawn : MonoBehaviour
 		// StartCoroutine(q16.ActOnBeat());
     }
 
+	public bool IsGrounded()
+	{
+		return _chrCtrl.isGrounded;
+	}
+
 	/// <summary>
 	/// Moves the player pawn in the input direction.
 	/// </summary>
@@ -62,13 +68,6 @@ public class PlayerPawn : MonoBehaviour
 		float fallSpeed = (_fallDistThisBeat / q16.BeatLength) * conductor.pitchedDeltaTime;
 
 		_chrCtrl.Move(Vector3.down * fallSpeed);
-
-
-		if (_chrCtrl.isGrounded)
-		{
-			// Debug.Log("Ground Detected!");
-			canJump = true;
-		}
 	}
 
 	private void IncreaseFallSpeed()

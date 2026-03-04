@@ -42,7 +42,7 @@ public class Quantizer
 			if (ElapsedBeats(_lastBeatTime) > 1)
 			{
 				_lastBeatTime += BeatLength;
-				TasksToPerform();
+				TasksToPerform?.Invoke();
 			}
 
 			yield return null;

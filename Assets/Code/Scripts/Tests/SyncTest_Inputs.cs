@@ -61,8 +61,8 @@ public class SyncTest_Inputs : MonoBehaviour
 		// Debug.Log(q1.BeatLength);
 	}
 
-	//   // Update is called once per frame
-	//   void Update()
+	// Update is called once per frame
+	//void Update()
 	//{
 
 	//	switch (jumpPhase)
