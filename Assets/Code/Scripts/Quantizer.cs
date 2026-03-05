@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 /// <summary>
@@ -10,16 +11,28 @@ public class Quantizer
 	/// <summary></summary>
 	public Conductor conductor;
 	/// <summary>The type of note that gets one beat.</summary>
-	public int beatNoteType;
-
-	/// <summary>
-	/// Whether to truncate beats that start and end in different bars.
-	/// (Useful when working with uncommon time signatures, like 7/8)
-	/// </summary>
-	// public bool truncateBeats;
-
-	/// <summary>The time duration of one beat.</summary>
+	public int beatNoteType = 4;
+	/// <summary>The time duration of one beat, in seconds.</summary>
 	public float BeatLength => conductor.GetBeatLength(beatNoteType);
+
+
+	public delegate void QuantizerDelegate();
+	public QuantizerDelegate OnBeatDelegate;
+
+	private float _lastBeatUpdate;
+	public IEnumerator UpdateOnBeat()
+	{
+		while (true)
+		{
+			if (BeatsSince(_lastBeatUpdate) > 1)
+			{
+				_lastBeatUpdate += BeatLength;
+				OnBeatDelegate?.Invoke();
+			}
+			yield return null;	// Wait until next frame
+		}
+	}
+
 
 
 	/// <summary>

@@ -25,7 +25,7 @@ public class Conductor : MonoBehaviour
 	public float songTimeInBars;
 
 	/// <summary>
-	/// The time duration, in seconds, of one bar.
+	/// The time duration of one bar, in seconds.
 	/// </summary>
 	/// <remarks>
 	/// (60 seconds per minute / quarter notes per minute) = seconds per quarter note

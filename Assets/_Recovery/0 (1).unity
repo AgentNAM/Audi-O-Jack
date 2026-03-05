@@ -336,7 +336,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d407c27a2e6a8fe40a2bbcc8176695a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  pawn: {fileID: 1937548854}
 --- !u!4 &228508463
 Transform:
   m_ObjectHideFlags: 0
@@ -346,7 +345,7 @@ Transform:
   m_GameObject: {fileID: 228508460}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -840,7 +839,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!65 &743416154
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -970,7 +969,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &744510755
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1294,7 +1293,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1449000941
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1416,6 +1415,7 @@ GameObject:
   - component: {fileID: 1937548852}
   - component: {fileID: 1937548851}
   - component: {fileID: 1937548850}
+  - component: {fileID: 1937548849}
   - component: {fileID: 1937548853}
   - component: {fileID: 1937548854}
   m_Layer: 0
@@ -1425,6 +1425,29 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!136 &1937548849
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1937548848}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &1937548850
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1537,10 +1560,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerPawn
   conductor: {fileID: 780787124}
   qStrong:
-    conductor: {fileID: 780787124}
+    conductor: {fileID: 0}
     beatNoteType: 8
   qWeak:
-    conductor: {fileID: 780787124}
+    conductor: {fileID: 0}
     beatNoteType: 16
   _velocityBeats: {x: 0, y: 0, z: 0}
   _velocitySec: {x: 0, y: 0, z: 0}
