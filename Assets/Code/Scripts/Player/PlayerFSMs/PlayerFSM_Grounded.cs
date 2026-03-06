@@ -1,16 +1,17 @@
 using UnityEngine;
 
-public class PlayerFSM : FSM
+public class PlayerFSM_Grounded : PlayerFSM
 {
-	protected PlayerController m_controller;
-	protected PlayerPawn m_pawn;
-
-	public PlayerFSM(PlayerController controller, PlayerPawn pawn)
+	protected enum StateTypes
 	{
-		m_controller = controller;
-		m_pawn = pawn;
+		NONE = 0,
+		STANDING,
+		COYOTE,
 	}
 
+	public PlayerFSM_Grounded(PlayerController controller, PlayerPawn pawn) : base(controller, pawn)
+	{
+	}
 
 	// === Initialize FSM ===
 	public override void InitFSM()
@@ -24,9 +25,22 @@ public class PlayerFSM : FSM
 
 	//}
 
+	protected void DoState_Standing()
+	{
+
+	}
+
+	protected void DoState_Coyote()
+	{
+
+	}
+
 	// === Behaviors ===
 	#region Behaviors
+	protected void HandleWalking()
+	{
 
+	}
 
 	#endregion
 
@@ -55,6 +69,8 @@ public class PlayerFSM : FSM
 	//	state.OnUpdateDelegate += delegate ()
 	//	{
 	//		Debug.Log("OnUpdate - NONE");
+
+	//		// Check for transitions out of our NONE state
 	//	};
 	//}
 	#endregion

@@ -8,6 +8,13 @@ public class FSM
 
     public FSM() { }
 
+
+	/// <summary>
+	/// Virtual method that initializes each of this FSM's states.
+    /// Derived classes must implement this method.
+	/// </summary>
+	public virtual void InitFSM() { }
+
     /// <summary>
     /// Method that adds a new state to our FSM.
     /// </summary>
@@ -47,7 +54,7 @@ public class FSM
     /// <summary>
     /// Method that calls UpdateState() in our current state.
     /// </summary>
-    public void ProcessCurrentState()
+    public void UpdateCurrentState()
     {
         m_currentState?.UpdateState();
     }

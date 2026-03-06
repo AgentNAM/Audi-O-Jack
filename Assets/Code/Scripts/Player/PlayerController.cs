@@ -7,24 +7,17 @@ public class PlayerController : MonoBehaviour
 
     public PlayerFSM fsm;
 
-	public enum PlayerStateTypes
-	{
-		NONE = 0,
-		GROUNDED,
-		JUMPING,
-		FALLING,
-	}
 
 	// Start is called once before the first execution of Update after the MonoBehaviour is created
 	void Start()
     {
-        fsm = new PlayerFSM();
+        fsm = new PlayerFSM(this, pawn);
     }
 
     // Update is called once per frame
     void Update()
     {
-        fsm.ProcessCurrentState();
+        fsm.UpdateCurrentState();
     }
 
     public void OnMoveChanged(InputAction.CallbackContext context)

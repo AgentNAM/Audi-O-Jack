@@ -48,13 +48,13 @@ public class PlayerPawn : MonoBehaviour
 	}
 
 	// == FUNCTIONS TO CALL EVERY FRAME ==
-	void ApplyMovement()
+	private void ApplyMovement()
 	{
 		transform.Translate(_velocitySec * Time.deltaTime);
 	}
 
 	// == FUNCTIONS TO CALL EVERY WEAK BEAT ==
-	void SetVelocitySec()
+	private void SetVelocitySec()
 	{
 		// Record current position
 		_lastPos = transform.position;
@@ -68,5 +68,20 @@ public class PlayerPawn : MonoBehaviour
 
 		// Calculate velocity per second
 		_velocitySec = (_nextPos - _lastPos) / (_nextTime - _lastTime);
+	}
+
+	// 
+	public void Walk(Vector2 inputDir)
+	{
+		_velocityBeats.x = inputDir.x;
+		_velocityBeats.z = inputDir.y;
+
+
+		//// Calculate move speed
+		//float moveSpeed = (moveDistPerBeat / q16.BeatLength) * conductor.pitchedDeltaTime;
+
+		//Vector3 moveDir = new Vector3(inputDir.x, 0f, inputDir.y);
+
+		//_chrCtrl.Move(moveDir * moveSpeed);
 	}
 }
