@@ -19,10 +19,10 @@ public class Conductor : MonoBehaviour
 	/// <summary>The time in seconds before the first beat occurs.</summary>
 	private float _offset;
 
-	/// <summary>The amount of time, in seconds, since the song began.</summary>
-	public float songTime;
-	/// <summary>The amount of time, in bars, since the song began.</summary>
-	public float songTimeInBars;
+	///// <summary>The amount of time, in seconds, since the song began.</summary>
+	//public float songTime;
+	///// <summary>The amount of time, in bars, since the song began.</summary>
+	//public float songTimeInBars;
 
 	/// <summary>
 	/// The time duration, in seconds, of one bar.
@@ -37,8 +37,11 @@ public class Conductor : MonoBehaviour
 	public float BarLength => (60 / _tempo) * 4 * _tsRatio;
 
 
-	//public float SongPosInSeconds => ((float)(AudioSettings.dspTime - _dspTimeSong) * _audioSource.pitch) - _offset;
-	//public float SongPosInBars => SongPosInSeconds / SecondsPerBar;
+	/// <summary>The amount of time, in seconds, since the song began.</summary>
+	public float SongTime => ((float)(AudioSettings.dspTime - _dspTimeSong) * _audioSource.pitch) - _offset;
+
+	/// <summary>The amount of time, in bars, since the song began.</summary>
+	public float SongTimeInBars => SongTime / BarLength;
 
 
 	// Awake is called when the script instance is being loaded
@@ -69,13 +72,13 @@ public class Conductor : MonoBehaviour
 	}
 
     // Update is called once per frame
-    void Update()
-	{
-		// Calculate song position in seconds
-		songTime = (float)(AudioSettings.dspTime - _dspTimeSong) * _audioSource.pitch - _offset;
-		// Calculate song position in bars
-		songTimeInBars = songTime / BarLength;
-	}
+ //   void Update()
+	//{
+	//	// Calculate song position in seconds
+	//	songTime = (float)(AudioSettings.dspTime - _dspTimeSong) * _audioSource.pitch - _offset;
+	//	// Calculate song position in bars
+	//	songTimeInBars = songTime / BarLength;
+	//}
 
 	public void DisplaySongInfo()
 	{

@@ -22,7 +22,7 @@ public class SyncTest_RotateEveryBeat : MonoBehaviour
     // Update is called once per frame
     void Update()
 	{
-		if (beatNumber < q1.Sec2Beat(conductor.songTime))
+		if (beatNumber < q1.Sec2Beat(conductor.SongTime))
 		{
 			beatNumber++;
 			UpdateOnBeat();

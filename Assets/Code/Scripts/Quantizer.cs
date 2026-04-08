@@ -22,6 +22,15 @@ public class Quantizer
 	public float BeatLength => conductor.GetBeatLength(beatNoteType);
 
 
+
+	public Quantizer(Conductor conductor, int beatNoteType)
+	{
+		this.conductor = conductor;
+		this.beatNoteType = beatNoteType;
+	}
+
+
+
 	/// <summary>
 	/// Converts <paramref name="timeInSeconds"/> from seconds to beats.
 	/// </summary>
@@ -96,7 +105,7 @@ public class Quantizer
 	/// <returns></returns>
 	public float BeatsSince(float timeInSeconds)
 	{
-		return Sec2Beat(conductor.songTime - timeInSeconds);
+		return Sec2Beat(conductor.SongTime - timeInSeconds);
 	}
 
 	/// <summary>
@@ -105,7 +114,7 @@ public class Quantizer
 	/// <returns></returns>
 	public float BeatsSinceStart()
 	{
-		return Sec2Beat(conductor.songTime);
+		return Sec2Beat(conductor.SongTime);
 	}
 
 	/// <summary>
@@ -114,6 +123,6 @@ public class Quantizer
 	/// <returns></returns>
 	public float BeatsSinceLastBar()
 	{
-		return Sec2Beat(conductor.songTime - conductor.FloorToBar(conductor.songTime));
+		return Sec2Beat(conductor.SongTime - conductor.FloorToBar(conductor.SongTime));
 	}
 }
