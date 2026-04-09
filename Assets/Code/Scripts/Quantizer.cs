@@ -8,18 +8,21 @@ using UnityEngine;
 public class Quantizer
 {
 	/// <summary></summary>
-	public Conductor conductor;
+	private Conductor _conductor;
 	/// <summary>The type of note that gets one beat.</summary>
-	public int beatNoteType;
-
-	/// <summary>
-	/// Whether to truncate beats that start and end in different bars.
-	/// (Useful when working with uncommon time signatures, like 7/8)
-	/// </summary>
-	// public bool truncateBeats;
+	private int _beatNoteType;
 
 	/// <summary>The time duration of one beat.</summary>
-	public float BeatLength => conductor.GetBeatLength(beatNoteType);
+	public float BeatLength => _conductor.GetBeatLength(_beatNoteType);
+
+
+	public Quantizer(Conductor conductor, int beatNoteType)
+	{
+		_conductor = conductor;
+		_beatNoteType = beatNoteType;
+	}
+
+
 
 
 	/// <summary>
@@ -96,7 +99,7 @@ public class Quantizer
 	/// <returns></returns>
 	public float BeatsSince(float timeInSeconds)
 	{
-		return Sec2Beat(conductor.songTime - timeInSeconds);
+		return Sec2Beat(_conductor.songTime - timeInSeconds);
 	}
 
 	/// <summary>
@@ -105,15 +108,15 @@ public class Quantizer
 	/// <returns></returns>
 	public float BeatsSinceStart()
 	{
-		return Sec2Beat(conductor.songTime);
+		return Sec2Beat(_conductor.songTime);
 	}
 
-	/// <summary>
-	/// Returns the elapsed time in beats since the start of the current bar.
-	/// </summary>
-	/// <returns></returns>
-	public float BeatsSinceLastBar()
-	{
-		return Sec2Beat(conductor.songTime - conductor.FloorToBar(conductor.songTime));
-	}
+	///// <summary>
+	///// Returns the elapsed time in beats since the start of the current bar.
+	///// </summary>
+	///// <returns></returns>
+	//public float BeatsSinceLastBar()
+	//{
+	//	return Sec2Beat(_conductor.songTime - _conductor.FloorToBar(_conductor.songTime));
+	//}
 }

@@ -77,73 +77,6 @@ public class Conductor : MonoBehaviour
 		songTimeInBars = songTime / BarLength;
 	}
 
-	public void DisplaySongInfo()
-	{
-		Debug.Log($"Tempo: {_tempo}");
-		Debug.Log($"Time Signature: {_tsNotesPerBar}/{_tsNoteValue}");
-		Debug.Log($"Bar Duration: {BarLength}");
-		Debug.Log($"Note Duration: {BarLength / _tsNotesPerBar}");
-	}
-
-	/// <summary>
-	/// Converts <paramref name="timeInSeconds"/> from seconds to bars.
-	/// </summary>
-	/// <param name="timeInSeconds"></param>
-	/// <returns></returns>
-	public float Sec2Bar(float timeInSeconds)
-	{
-		return timeInSeconds / BarLength;
-	}
-
-	/// <summary>
-	/// Converts <paramref name="timeInBars"/> from bars to seconds.
-	/// </summary>
-	/// <param name="timeInBars"></param>
-	/// <returns></returns>
-	public float Bar2Sec(float timeInBars)
-	{
-		return timeInBars * BarLength;
-	}
-
-
-	/// <summary>
-	/// Returns the largest multiple of <c>this.BarLength</c> smaller than or equal to <paramref name="timeInSeconds"/>
-	/// </summary>
-	/// <param name="timeInSeconds">Time value to round down.</param>
-	/// <returns>The time of the last bar, in seconds.</returns>
-	public float FloorToBar(float timeInSeconds)
-	{
-		return Bar2Sec(
-			Mathf.Floor(Sec2Bar(timeInSeconds))
-			);
-	}
-
-	/// <summary>
-	/// Returns <paramref name="timeInSeconds"/> rounded to the nearest multiple of <c>this.BarLength</c>
-	/// </summary>
-	/// <param name="timeInSeconds">Time value to round.</param>
-	/// <returns>The time of the nearest bar, in seconds.</returns>
-	public float RoundToBar(float timeInSeconds)
-	{
-		return Bar2Sec(
-			Mathf.Round(Sec2Bar(timeInSeconds))
-			);
-	}
-
-	/// <summary>
-	/// Returns the smallest multiple of <c>this.BarLength</c> greater than or equal to <paramref name="timeInSeconds"/>
-	/// </summary>
-	/// <param name="timeInSeconds">Time value to round up.</param>
-	/// <returns>The time of the next bar, in seconds.</returns>
-	public float CeilToBar(float timeInSeconds)
-	{
-		return Bar2Sec(
-			Mathf.Ceil(Sec2Bar(timeInSeconds))
-			);
-	}
-
-
-
 	/// <summary>
 	/// Returns the time duration in seconds of one beat with a specified note value.
 	/// </summary>
@@ -159,54 +92,70 @@ public class Conductor : MonoBehaviour
 		return BarLength / (beatNoteValue * _tsRatio);
 	}
 
-
-
-
-
-	/*
 	/// <summary>
-	/// Returns the number of beats that have passed, given the type of note that one beat represents.
+	/// Returns a quantizer class with a specific beat note type
 	/// </summary>
-	/// <param name="noteType">
-	/// The type of note that this beat represents.
-	/// (=4 for quarter notes, =8 for eighth notes, =16 for sixteenth notes, etc.)
-	/// </param>
-	/// <param name="truncateBeats">
-	/// Whether to truncate beats that start and end in different bars. (Useful when working with uncommon time signatures, like 7/8)
-	/// </param>
+	/// <param name="beatNoteType"></param>
 	/// <returns></returns>
-	public int GetBeatNumber(int noteType, bool truncateBeats = false)
+	public Quantizer BuildQuantizer(int beatNoteType)
 	{
-		float beatLength = GetBeatLength(noteType);
-		if (truncateBeats)
-		{
-			int beatsOfTypePerBar = Mathf.CeilToInt(SecondsPerBar / beatLength);
-			return Mathf.FloorToInt((songTime % SecondsPerBar) / beatLength) + (beatsOfTypePerBar * BarNumber);
-		}
-		return Mathf.FloorToInt(songTime / beatLength);
+		return new Quantizer(this, beatNoteType);
 	}
 
-	/// <summary>
-	/// Returns the percentage of the current beat that has passed, given the type of note that one beat represents.
-	/// </summary>
-	/// <param name="noteType">
-	/// The type of note that this beat represents.
-	/// (=4 for quarter notes, =8 for eighth notes, =16 for sixteenth notes, etc.)
-	/// </param>
-	/// <param name="truncateBeats">
-	/// Whether to truncate beats that start and end in different bars. (Useful when working with uncommon time signatures, like 7/8)
-	/// </param>
-	/// <returns>
-	/// A float representing the percentage of the current beat that has passed, ranging from 0 to 1.
-	/// </returns>
-	public float GetBeatPercent(int noteType, bool truncateBeats=false)
-	{
-		float beatLength = GetBeatLength(noteType);
-		if (truncateBeats)
-		{
-			return ((songTime % SecondsPerBar) % beatLength) / beatLength;
-		}
-		return (songTime % beatLength) / beatLength;
-	}
-	*/
+	///// <summary>
+	///// Converts <paramref name="timeInSeconds"/> from seconds to bars.
+	///// </summary>
+	///// <param name="timeInSeconds"></param>
+	///// <returns></returns>
+	//public float Sec2Bar(float timeInSeconds)
+	//{
+	//	return timeInSeconds / BarLength;
+	//}
+
+	///// <summary>
+	///// Converts <paramref name="timeInBars"/> from bars to seconds.
+	///// </summary>
+	///// <param name="timeInBars"></param>
+	///// <returns></returns>
+	//public float Bar2Sec(float timeInBars)
+	//{
+	//	return timeInBars * BarLength;
+	//}
+
+
+	///// <summary>
+	///// Returns the largest multiple of <c>this.BarLength</c> smaller than or equal to <paramref name="timeInSeconds"/>
+	///// </summary>
+	///// <param name="timeInSeconds">Time value to round down.</param>
+	///// <returns>The time of the last bar, in seconds.</returns>
+	//public float FloorToBar(float timeInSeconds)
+	//{
+	//	return Bar2Sec(
+	//		Mathf.Floor(Sec2Bar(timeInSeconds))
+	//		);
+	//}
+
+	///// <summary>
+	///// Returns <paramref name="timeInSeconds"/> rounded to the nearest multiple of <c>this.BarLength</c>
+	///// </summary>
+	///// <param name="timeInSeconds">Time value to round.</param>
+	///// <returns>The time of the nearest bar, in seconds.</returns>
+	//public float RoundToBar(float timeInSeconds)
+	//{
+	//	return Bar2Sec(
+	//		Mathf.Round(Sec2Bar(timeInSeconds))
+	//		);
+	//}
+
+	///// <summary>
+	///// Returns the smallest multiple of <c>this.BarLength</c> greater than or equal to <paramref name="timeInSeconds"/>
+	///// </summary>
+	///// <param name="timeInSeconds">Time value to round up.</param>
+	///// <returns>The time of the next bar, in seconds.</returns>
+	//public float CeilToBar(float timeInSeconds)
+	//{
+	//	return Bar2Sec(
+	//		Mathf.Ceil(Sec2Bar(timeInSeconds))
+	//		);
+	//}
 }
