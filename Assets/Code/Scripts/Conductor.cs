@@ -92,7 +92,11 @@ public class Conductor : MonoBehaviour
 		return BarLength / (beatNoteValue * _tsRatio);
 	}
 
-
+	/// <summary>
+	/// Returns a quantizer class with a specific beat note type
+	/// </summary>
+	/// <param name="beatNoteType"></param>
+	/// <returns></returns>
 	public Quantizer BuildQuantizer(int beatNoteType)
 	{
 		return new Quantizer(this, beatNoteType);
