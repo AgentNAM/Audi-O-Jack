@@ -77,14 +77,6 @@ public class Conductor : MonoBehaviour
 		songTimeInBars = songTime / BarLength;
 	}
 
-	public void DisplaySongInfo()
-	{
-		Debug.Log($"Tempo: {_tempo}");
-		Debug.Log($"Time Signature: {_tsNotesPerBar}/{_tsNoteValue}");
-		Debug.Log($"Bar Duration: {BarLength}");
-		Debug.Log($"Note Duration: {BarLength / _tsNotesPerBar}");
-	}
-
 	/// <summary>
 	/// Converts <paramref name="timeInSeconds"/> from seconds to bars.
 	/// </summary>
@@ -158,55 +150,4 @@ public class Conductor : MonoBehaviour
 	{
 		return BarLength / (beatNoteValue * _tsRatio);
 	}
-
-
-
-
-
-	/*
-	/// <summary>
-	/// Returns the number of beats that have passed, given the type of note that one beat represents.
-	/// </summary>
-	/// <param name="noteType">
-	/// The type of note that this beat represents.
-	/// (=4 for quarter notes, =8 for eighth notes, =16 for sixteenth notes, etc.)
-	/// </param>
-	/// <param name="truncateBeats">
-	/// Whether to truncate beats that start and end in different bars. (Useful when working with uncommon time signatures, like 7/8)
-	/// </param>
-	/// <returns></returns>
-	public int GetBeatNumber(int noteType, bool truncateBeats = false)
-	{
-		float beatLength = GetBeatLength(noteType);
-		if (truncateBeats)
-		{
-			int beatsOfTypePerBar = Mathf.CeilToInt(SecondsPerBar / beatLength);
-			return Mathf.FloorToInt((songTime % SecondsPerBar) / beatLength) + (beatsOfTypePerBar * BarNumber);
-		}
-		return Mathf.FloorToInt(songTime / beatLength);
-	}
-
-	/// <summary>
-	/// Returns the percentage of the current beat that has passed, given the type of note that one beat represents.
-	/// </summary>
-	/// <param name="noteType">
-	/// The type of note that this beat represents.
-	/// (=4 for quarter notes, =8 for eighth notes, =16 for sixteenth notes, etc.)
-	/// </param>
-	/// <param name="truncateBeats">
-	/// Whether to truncate beats that start and end in different bars. (Useful when working with uncommon time signatures, like 7/8)
-	/// </param>
-	/// <returns>
-	/// A float representing the percentage of the current beat that has passed, ranging from 0 to 1.
-	/// </returns>
-	public float GetBeatPercent(int noteType, bool truncateBeats=false)
-	{
-		float beatLength = GetBeatLength(noteType);
-		if (truncateBeats)
-		{
-			return ((songTime % SecondsPerBar) % beatLength) / beatLength;
-		}
-		return (songTime % beatLength) / beatLength;
-	}
-	*/
 }

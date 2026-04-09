@@ -32,13 +32,5 @@ public class SyncTest_RotateEveryBeat : MonoBehaviour
 	void UpdateOnBeat()
 	{
 		transform.Rotate(0, 0, 90);
-
-		//float beatToBarRatio = (float)(q1.beatNoteType * conductor.TimeSignature);
-		//float amountToRotate = 180f / beatToBarRatio;
-		//transform.Rotate(0, 0, amountToRotate);
-		// Debug.Log(amountToRotate);
-		// Debug.Log(q1.BeatLength);
-
-		// Debug.Log((q1.GetBeatTime(beatNumber + 1) - q1.GetBeatTime(beatNumber))/q1.BeatLength);
 	}
 }

@@ -12,12 +12,6 @@ public class Quantizer
 	/// <summary>The type of note that gets one beat.</summary>
 	public int beatNoteType;
 
-	/// <summary>
-	/// Whether to truncate beats that start and end in different bars.
-	/// (Useful when working with uncommon time signatures, like 7/8)
-	/// </summary>
-	// public bool truncateBeats;
-
 	/// <summary>The time duration of one beat.</summary>
 	public float BeatLength => conductor.GetBeatLength(beatNoteType);
 
