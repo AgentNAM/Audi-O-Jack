@@ -923,12 +923,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1032814292}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -1, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1375836572}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1252320112
 GameObject:
@@ -1083,12 +1083,8 @@ MonoBehaviour:
   _lastPos: {x: 0, y: 0, z: 0}
   _nextPos: {x: 0, y: 0, z: 0}
   moveSpeed: 2
-  _jumpState: 0
   _isJumping: 0
   _jumpStartTime: 0
-  _nextJumpCheckTime: 0
-  jumpSpeed: 2
-  fallSpeed: 3
 --- !u!136 &1375836569
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1181,8 +1177,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1032814295}
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!143 &1375836574
@@ -1203,8 +1198,8 @@ CharacterController:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Height: 1.84
-  m_Radius: 0.42
+  m_Height: 2
+  m_Radius: 0.5
   m_SlopeLimit: 45
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
@@ -1503,7 +1498,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4445270432697519494, guid: 2ac3b4060e8daba41bf7d2695981c7c3, type: 3}
       propertyPath: m_Volume
-      value: 0.05
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 8164411203468487977, guid: 2ac3b4060e8daba41bf7d2695981c7c3, type: 3}
       propertyPath: songData
@@ -1528,4 +1523,5 @@ SceneRoots:
   - {fileID: 743416157}
   - {fileID: 744510759}
   - {fileID: 1449000945}
+  - {fileID: 1032814295}
   - {fileID: 1375836572}

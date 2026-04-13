@@ -27,18 +27,16 @@ public class Conductor : MonoBehaviour
 	/// <summary>
 	/// The time duration, in seconds, of one bar.
 	/// </summary>
-	/// <remarks>
-	/// (60 seconds per minute / quarter notes per minute) = seconds per quarter note
-	/// <br/>
-	/// seconds per quarter note * 4 = seconds per whole note
-	/// <br/>
-	/// seconds per whole note * TimeSignature = seconds per bar
-	/// </remarks>
-	public float BarLength => (60 / _tempo) * 4 * _tsRatio;
-
-
-	//public float SongPosInSeconds => ((float)(AudioSettings.dspTime - _dspTimeSong) * _audioSource.pitch) - _offset;
-	//public float SongPosInBars => SongPosInSeconds / SecondsPerBar;
+	public float BarLength
+	{
+		get
+		{
+			// (60 seconds per minute / quarter notes per minute) = seconds per quarter note
+			// seconds per quarter note * 4 = seconds per whole note
+			// seconds per whole note * TimeSignature = seconds per bar
+			return (60 / _tempo) * 4 * _tsRatio;
+		}
+	}
 
 
 	// Awake is called when the script instance is being loaded

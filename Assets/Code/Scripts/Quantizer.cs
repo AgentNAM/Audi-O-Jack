@@ -15,15 +15,12 @@ public class Quantizer
 	/// <summary>The time duration of one beat.</summary>
 	public float BeatLength => _conductor.GetBeatLength(_beatNoteType);
 
-
+	// Constructor
 	public Quantizer(Conductor conductor, int beatNoteType)
 	{
 		_conductor = conductor;
 		_beatNoteType = beatNoteType;
 	}
-
-
-
 
 	/// <summary>
 	/// Converts <paramref name="timeInSeconds"/> from seconds to beats.
