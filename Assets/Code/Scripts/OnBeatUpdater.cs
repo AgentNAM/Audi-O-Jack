@@ -1,13 +1,16 @@
 using UnityEngine;
+using UnityEngine.Events;
 
-public class SyncTest_RotateEveryBeat : MonoBehaviour
+public class OnBeatUpdater : MonoBehaviour
 {
-    public Conductor conductor;
+	public Conductor conductor;
+	public int beatNoteType;
+
+	public UnityEvent updateOnBeat;
 
 	private Quantizer _quantizer;
-	private int _beatNumber;
+	private int _beatNumber = 1;
 
-	public int beatNoteType;
 
 	// Awake is called when the script instance is being loaded
 	void Awake()
@@ -18,16 +21,11 @@ public class SyncTest_RotateEveryBeat : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-	{
+    {
 		if (_beatNumber < _quantizer.BeatsSinceStart())
 		{
 			_beatNumber++;
-			UpdateOnBeat();
+			updateOnBeat?.Invoke();
 		}
-	}
-
-	void UpdateOnBeat()
-	{
-		transform.Rotate(0, 0, 90);
 	}
 }
