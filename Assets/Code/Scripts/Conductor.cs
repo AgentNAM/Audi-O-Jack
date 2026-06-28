@@ -37,10 +37,6 @@ public class Conductor : MonoBehaviour
 	public float BarLength => (60 / _tempo) * 4 * _tsRatio;
 
 
-	//public float SongPosInSeconds => ((float)(AudioSettings.dspTime - _dspTimeSong) * _audioSource.pitch) - _offset;
-	//public float SongPosInBars => SongPosInSeconds / SecondsPerBar;
-
-
 	// Awake is called when the script instance is being loaded
 	void Awake()
 	{
@@ -66,6 +62,9 @@ public class Conductor : MonoBehaviour
 		// Play song and record dspTime
 		_audioSource.Play();
         _dspTimeSong = AudioSettings.dspTime;
+
+		// Uncomment to drop framerate
+		//Application.targetFrameRate = 2;
 	}
 
     // Update is called once per frame
@@ -75,6 +74,7 @@ public class Conductor : MonoBehaviour
 		songTime = (float)(AudioSettings.dspTime - _dspTimeSong) * _audioSource.pitch - _offset;
 		// Calculate song position in bars
 		songTimeInBars = songTime / BarLength;
+
 	}
 
 	/// <summary>
@@ -101,61 +101,4 @@ public class Conductor : MonoBehaviour
 	{
 		return new Quantizer(this, beatNoteType);
 	}
-
-	///// <summary>
-	///// Converts <paramref name="timeInSeconds"/> from seconds to bars.
-	///// </summary>
-	///// <param name="timeInSeconds"></param>
-	///// <returns></returns>
-	//public float Sec2Bar(float timeInSeconds)
-	//{
-	//	return timeInSeconds / BarLength;
-	//}
-
-	///// <summary>
-	///// Converts <paramref name="timeInBars"/> from bars to seconds.
-	///// </summary>
-	///// <param name="timeInBars"></param>
-	///// <returns></returns>
-	//public float Bar2Sec(float timeInBars)
-	//{
-	//	return timeInBars * BarLength;
-	//}
-
-
-	///// <summary>
-	///// Returns the largest multiple of <c>this.BarLength</c> smaller than or equal to <paramref name="timeInSeconds"/>
-	///// </summary>
-	///// <param name="timeInSeconds">Time value to round down.</param>
-	///// <returns>The time of the last bar, in seconds.</returns>
-	//public float FloorToBar(float timeInSeconds)
-	//{
-	//	return Bar2Sec(
-	//		Mathf.Floor(Sec2Bar(timeInSeconds))
-	//		);
-	//}
-
-	///// <summary>
-	///// Returns <paramref name="timeInSeconds"/> rounded to the nearest multiple of <c>this.BarLength</c>
-	///// </summary>
-	///// <param name="timeInSeconds">Time value to round.</param>
-	///// <returns>The time of the nearest bar, in seconds.</returns>
-	//public float RoundToBar(float timeInSeconds)
-	//{
-	//	return Bar2Sec(
-	//		Mathf.Round(Sec2Bar(timeInSeconds))
-	//		);
-	//}
-
-	///// <summary>
-	///// Returns the smallest multiple of <c>this.BarLength</c> greater than or equal to <paramref name="timeInSeconds"/>
-	///// </summary>
-	///// <param name="timeInSeconds">Time value to round up.</param>
-	///// <returns>The time of the next bar, in seconds.</returns>
-	//public float CeilToBar(float timeInSeconds)
-	//{
-	//	return Bar2Sec(
-	//		Mathf.Ceil(Sec2Bar(timeInSeconds))
-	//		);
-	//}
 }
