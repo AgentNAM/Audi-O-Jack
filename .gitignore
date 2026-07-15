@@ -75,3 +75,6 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 /Assets/Code/Scripts/Quantizer.cs
 /Assets/Code/Scripts/OnBeatUpdater.cs
+/Assembly-CSharp.csproj
+/Assembly-CSharp.csproj
+/Assembly-CSharp.csproj

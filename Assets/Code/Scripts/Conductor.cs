@@ -68,7 +68,7 @@ public class Conductor : MonoBehaviour
 	}
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
 	{
 		// Calculate song position in seconds
 		songTime = (float)(AudioSettings.dspTime - _dspTimeSong) * _audioSource.pitch - _offset;
