@@ -15,6 +15,7 @@ public class PlayerFSM : FiniteStateMachine
 			new TailSwipeState(this, player),
 			new TailLaunchState(this, player),
 			new FlipState(this, player),
+			new DeathState(this, player),
 		};
 		SetStates(states, defaultState);
 	}
@@ -173,7 +174,10 @@ public class TailSwipeState : State
 		player.StartTailSwipe();
 	}
 
-	public override void OnExit() { }
+	public override void OnExit()
+	{
+		player.EndTailSwipe();
+	}
 
 	public override void Update() { }
 
@@ -269,11 +273,11 @@ public class FlipState : State
 }
 
 /// <summary>
-/// WALL RUN STATE
+/// DEATH STATE
 /// </summary>
-public class WallRunState : State
+public class DeathState : State
 {
-	public WallRunState(FiniteStateMachine fsm, PlayerController player) : base(fsm, player) { }
+	public DeathState(FiniteStateMachine fsm, PlayerController player) : base(fsm, player) { }
 
 	public override void OnEnter() { }
 

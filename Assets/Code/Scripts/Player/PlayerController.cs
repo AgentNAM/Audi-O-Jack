@@ -8,8 +8,6 @@ public class PlayerController : MonoBehaviour
 	public int beatNoteType;
 	public int offbeatsPerOnbeat;
 
-	private Rigidbody _rb;
-
 	private PlayerFSM _fsm;
 	private PlayerPawn _pawn;
 
@@ -35,11 +33,8 @@ public class PlayerController : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
 	{
-		// Build quantizers
+		// Build quantizer
 		_quantizer = conductor.BuildQuantizer(beatNoteType);
-
-		// Initialize Rigidbody
-		_rb = GetComponent<Rigidbody>();
 
 		// Initialize PlayerPawn
 		_pawn = GetComponent<PlayerPawn>();
@@ -102,6 +97,11 @@ public class PlayerController : MonoBehaviour
 	public void HandleTailSwipe()
 	{
 		_pawn.ApplyVelocityFalloff();
+	}
+
+	public void EndTailSwipe()
+	{
+		_pawn.HideTail();
 	}
 
 	public void HandleTailLaunch()
@@ -223,5 +223,10 @@ public class PlayerController : MonoBehaviour
 	public bool DidGrappleHit()
 	{
 		return _pawn.grappleHit;
+	}
+
+	public bool DidTouchSurface(out Vector3 surfaceNormal)
+	{
+		return _pawn.IsTouchingTerrain(out surfaceNormal);
 	}
 }
