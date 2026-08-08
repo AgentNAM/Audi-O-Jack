@@ -27,8 +27,8 @@ public class MetronomeImageAnimator : MonoBehaviour
 		_image = GetComponent<Image>();
     }
 
-    // Update is called once per frame
-    void Update()
+	// Update is called once per frame
+	void Update()
 	{
 		if (_beatNumber < _quantizer.BeatsSinceStart())
 		{

@@ -15,6 +15,7 @@ public class PlayerFSM : FiniteStateMachine
 			new TailSwipeState(this, player),
 			new TailLaunchState(this, player),
 			new FlipState(this, player),
+			new PratfallState(this, player),
 			new DeathState(this, player),
 		};
 		SetStates(states, defaultState);
@@ -34,10 +35,7 @@ public class DefaultState : State
 		player.SnapToGround();
 	}
 
-	public override void OnExit()
-	{
-
-	}
+	public override void OnExit() { }
 
 	public override void Update() { }
 
@@ -47,7 +45,11 @@ public class DefaultState : State
 		player.HandleGroundMovement();
 
 		// Check for transitions out of this state
-		if (player.isJumpPressed && !player.HasTimePassed(player.lastJumpPress, player.jumpBufferTime))
+		if (player.IsDead())
+		{
+			Goto<DeathState>();
+		}
+		else if (player.isJumpPressed && !player.HasTimePassed(player.lastJumpPress, player.jumpBufferTime))
 		{
 			//Debug.Log(player.WasInputOnBeat(player.lastJumpPress, 2));
 			if (player.WasEventOnBeat(player.lastJumpPress))
@@ -59,7 +61,7 @@ public class DefaultState : State
 				Goto<HoverJumpState>();
 			}
 		}
-		else if (player.isTailPressed)
+		else if (player.isTailPressed && !player.HasTimePassed(player.lastTailPress, 0.1f))
 		{
 			Goto<TailSwipeState>();
 		}
@@ -82,7 +84,10 @@ public class BoostJumpState : State
 		player.StartJump();
 	}
 
-	public override void OnExit() { }
+	public override void OnExit()
+	{
+		player.EndJump();
+	}
 
 	public override void Update() { }
 
@@ -93,7 +98,15 @@ public class BoostJumpState : State
 		player.HandleBoostJump();
 
 		// Check for transitions out of this state
-		if (!player.isJumpPressed || player.HasTimePassed(fsm.lastStateChange, player.maxJumpTime))
+		if (player.IsDead())
+		{
+			Goto<DeathState>();
+		}
+		else if (player.isTailPressed && !player.HasTimePassed(player.lastTailPress, 0.1f))
+		{
+			Goto<TailSwipeState>();
+		}
+		else if (!player.isJumpPressed || player.HasTimePassed(fsm.lastStateChange, player.maxJumpTime))
 		{
 			Goto<FallingState>();
 		}
@@ -112,7 +125,10 @@ public class HoverJumpState : State
 		player.StartJump();
 	}
 
-	public override void OnExit() { }
+	public override void OnExit()
+	{
+		player.EndJump();
+	}
 
 	public override void Update() { }
 
@@ -123,7 +139,15 @@ public class HoverJumpState : State
 		player.HandleHoverJump();
 
 		// Check for transitions out of this state
-		if (!player.isJumpPressed || player.HasTimePassed(fsm.lastStateChange, player.maxHoverTime))
+		if (player.IsDead())
+		{
+			Goto<DeathState>();
+		}
+		else if (player.isTailPressed && !player.HasTimePassed(player.lastTailPress, 0.1f))
+		{
+			Goto<TailSwipeState>();
+		}
+		else if (!player.isJumpPressed || player.HasTimePassed(fsm.lastStateChange, player.maxHoverTime))
 		{
 			Goto<FallingState>();
 		}
@@ -151,7 +175,11 @@ public class FallingState : State
 		player.HandleFalling();
 
 		// Check for transitions out of this state
-		if (player.isTailPressed)
+		if (player.IsDead())
+		{
+			Goto<DeathState>();
+		}
+		else if (player.isTailPressed && !player.HasTimePassed(player.lastTailPress, 0.1f))
 		{
 			Goto<TailSwipeState>();
 		}
@@ -187,7 +215,11 @@ public class TailSwipeState : State
 		player.HandleTailSwipe();
 
 		// Check for transitions out of this state
-		if (player.HasBeatsPassed(player.lastTailPressBeat, 1f))
+		if (player.IsDead())
+		{
+			Goto<DeathState>();
+		}
+		else if (player.HasBeatsPassed(player.lastTailPressBeat, player.tailStunBeats))
 		{
 			if (player.DidGrappleHit())
 			{
@@ -195,8 +227,39 @@ public class TailSwipeState : State
 			}
 			else
 			{
-				Goto<FallingState>();
+				Goto<PratfallState>();
 			}
+		}
+	}
+}
+
+/// <summary>
+/// PRATFALL STATE
+/// </summary>
+public class PratfallState : State
+{
+	public PratfallState(FiniteStateMachine fsm, PlayerController player) : base(fsm, player) { }
+
+	public override void OnEnter() { }
+
+	public override void OnExit() { }
+
+	public override void Update() { }
+
+	public override void FixedUpdate()
+	{
+		// Do behaviors associated with this state
+		player.HandleAirMovement();
+		player.HandleFalling();
+
+		// Check for transitions out of this state
+		if (player.IsDead())
+		{
+			Goto<DeathState>();
+		}
+		else if (player.IsLanding())
+		{
+			Goto<DefaultState>();
 		}
 	}
 }
@@ -222,7 +285,11 @@ public class TailLaunchState : State
 		// Do behaviors associated with this state
 
 		// Check for transitions out of this state
-		if (player.IsLanding())
+		if (player.IsDead())
+		{
+			Goto<DeathState>();
+		}
+		else if (player.IsLanding())
 		{
 			Goto<DefaultState>();
 		}
@@ -253,7 +320,11 @@ public class FlipState : State
 		player.HandleAirMovement();
 
 		// Check for transitions out of this state
-		if (player.isJumpPressed && !player.HasTimePassed(player.lastJumpPress, player.jumpBufferTime))
+		if (player.IsDead())
+		{
+			Goto<DeathState>();
+		}
+		else if (player.isJumpPressed && !player.HasTimePassed(player.lastJumpPress, player.jumpBufferTime))
 		{
 			//Debug.Log(player.WasInputOnBeat(player.lastJumpPress, 2));
 			if (player.WasEventOnBeat(player.lastJumpPress))
@@ -279,9 +350,15 @@ public class DeathState : State
 {
 	public DeathState(FiniteStateMachine fsm, PlayerController player) : base(fsm, player) { }
 
-	public override void OnEnter() { }
+	public override void OnEnter()
+	{
+		player.StartDeath();
+	}
 
-	public override void OnExit() { }
+	public override void OnExit()
+	{
+		player.EndDeath();
+	}
 
 	public override void Update() { }
 
@@ -290,5 +367,9 @@ public class DeathState : State
 		// Do behaviors associated with this state
 
 		// Check for transitions out of this state
+		if (player.HasTimePassed(fsm.lastStateChange, player.respawnTime))
+		{
+			Goto<DefaultState>();
+		}
 	}
 }

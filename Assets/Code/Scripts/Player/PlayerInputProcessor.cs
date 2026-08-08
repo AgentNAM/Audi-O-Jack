@@ -18,6 +18,16 @@ public class PlayerInputProcessor : MonoBehaviour
 	private float _lastTailPress;
 	private float _lastTailRelease;
 
+	public Vector2 StickVector { get { return _stickVector; } }
+
+	public bool IsJumpPressed { get { return _isJumpPressed; } }
+	public float LastJumpPress { get { return _lastJumpPress; } }
+	public float LastJumpRelease { get { return _lastJumpRelease; } }
+
+	public bool IsTailPressed { get { return _isTailPressed; } }
+	public float LastTailPress { get { return _lastTailPress; } }
+	public float LastTailRelease { get { return _lastTailRelease; } }
+
 
 	// Start is called once before the first execution of Update after the MonoBehaviour is created
 	void Start()

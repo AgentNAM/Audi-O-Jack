@@ -21,6 +21,8 @@ public class PlayerPawn : MonoBehaviour
 
 	[SerializeField] private float _jumpForce;
 	[SerializeField] private float _minBoostSpeed;
+	[SerializeField] private ParticleSystem _boostParticles;
+	[SerializeField] private ParticleSystem _hoverParticles;
 
 	[SerializeField] private float _groundedDistance;
 
@@ -30,6 +32,7 @@ public class PlayerPawn : MonoBehaviour
 	[SerializeField] private float _tailBackDistance;
 	[SerializeField] private float _tailWidth;
 	[SerializeField] private LayerMask _grapplableLayers;
+	[SerializeField] private LayerMask _tailBlockingLayers;
 	[SerializeField] private float _tailStallMultiplier;
 	public bool grappleHit;
 	[SerializeField] private float _grappleLaunchForce;
@@ -39,6 +42,8 @@ public class PlayerPawn : MonoBehaviour
 	private bool _isDead;
 	private Vector3 _respawnPos;
 
+
+	public bool IsDead { get { return _isDead; } }
 
 
 	// Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -77,7 +82,6 @@ public class PlayerPawn : MonoBehaviour
 
 	public bool IsNearGround()
 	{
-		//Vector3 footPos = transform.position
 		if (Physics.BoxCast(transform.position, transform.localScale / 2, Vector3.down, Quaternion.identity, _groundedDistance, _terrainLayer))
 		{
 			return true;
@@ -185,6 +189,11 @@ public class PlayerPawn : MonoBehaviour
 	{
 		ApplyGravity();
 		LimitFallSpeed(_minBoostSpeed);
+
+		if (!_boostParticles.isEmitting)
+		{
+			_boostParticles.Play();
+		}
 	}
 
 	// Function which handles the logic for hover jumping
@@ -192,6 +201,17 @@ public class PlayerPawn : MonoBehaviour
 	{
 		ApplyGravity();
 		LimitFallSpeed(0);
+
+		if (!_hoverParticles.isEmitting)
+		{
+			_hoverParticles.Play();
+		}
+	}
+
+	public void ClearJumpParticles()
+	{
+		_boostParticles.Stop();
+		_hoverParticles.Stop();
 	}
 
 	// Function which handles the logic for falling
@@ -233,24 +253,44 @@ public class PlayerPawn : MonoBehaviour
 		// If the tail hits a grapplable object
 		if (DidTailHitSomething(out RaycastHit hitInfo))
 		{
-			if (hitInfo.collider.TryGetComponent(out IHasGrapplePoint grapplePoint))
+			// If the tail was obstructed by a non-grapplable object
+			if (WasTailBlocked(hitInfo.point, out RaycastHit blockInfo))
 			{
-				grapplePoint.SnapToGrapplePoint(ref _tailEndPoint);
+				DrawTail(_tailStartPoint, blockInfo.point);
 			}
 			else
 			{
-				_tailEndPoint = hitInfo.point;
+				if (hitInfo.collider.TryGetComponent(out IHasGrapplePoint grapplePoint))
+				{
+					grapplePoint.SnapToGrapplePoint(ref _tailEndPoint);
+				}
+				else
+				{
+					_tailEndPoint = hitInfo.point;
+				}
+				grappleHit = true;
+				DrawTail(_tailStartPoint, _tailEndPoint);
 			}
-			grappleHit = true;
-			//Debug.DrawLine(_tailStartPoint, _tailEndPoint, Color.blue, 1f);
-			DrawTail(_tailStartPoint, _tailEndPoint);
 		}
 		else
 		{
-			//Debug.DrawRay(_tailStartPoint, _swipeDir * _maxTailLength, Color.red, 1f);
-			DrawTail(_tailStartPoint, _tailStartPoint + _swipeDir * _maxTailLength);
+			grappleHit = false;
+			if (WasTailBlocked(_tailStartPoint + _swipeDir * _maxTailLength, out RaycastHit blockInfo))
+			{
+				DrawTail(_tailStartPoint, blockInfo.point);
+			}
+			else
+			{
+				DrawTail(_tailStartPoint, _tailStartPoint + _swipeDir * _maxTailLength);
+			}
 		}
 	}
+
+	//
+	//private bool TailCast(Vector3 startPos, Vector3 endPos, out RaycastHit hitInfo, LayerMask layerMask)
+	//{
+
+	//}
 
 	// Function that checks if the tail hit something
 	private bool DidTailHitSomething(out RaycastHit hitInfo)
@@ -260,6 +300,15 @@ public class PlayerPawn : MonoBehaviour
 			return true;
 		}
 		else if (Physics.SphereCast(_tailStartPoint, _tailWidth, _swipeDir, out hitInfo, _maxTailLength, _grapplableLayers))
+		{
+			return true;
+		}
+		return false;
+	}
+
+	private bool WasTailBlocked(Vector3 end, out RaycastHit hit)
+	{
+		if (Physics.Linecast(_tailStartPoint, end, out hit, _tailBlockingLayers))
 		{
 			return true;
 		}
@@ -318,17 +367,30 @@ public class PlayerPawn : MonoBehaviour
 		if (other.CompareTag("Hazard"))
 		{
 			Debug.Log("Dead");
-			//_isDead = true;
-			Respawn();
+			_isDead = true;
+			//Respawn();
 		}
+		else if (other.CompareTag("Checkpoint"))
+		{
+			_respawnPos = other.transform.position;
+		}
+	}
+
+	public void Die()
+	{
+		_baseVelocity = Vector3.zero;
+		//this.gameObject.SetActive(false);
 	}
 
 	//
 	public void Respawn()
 	{
-		Debug.DrawLine(transform.position, _respawnPos, Color.red, 1f, false);
+		//Debug.DrawLine(transform.position, _respawnPos, Color.red, 1f, false);
 
 		_baseVelocity = Vector3.zero;
 		transform.position = _respawnPos;
+
+		_isDead = false;
+		//this.gameObject.SetActive(true);
 	}
 }

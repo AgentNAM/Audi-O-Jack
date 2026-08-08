@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Events;
 
 public class PlayerController : MonoBehaviour
 {
@@ -17,7 +18,10 @@ public class PlayerController : MonoBehaviour
 	public bool isJumpPressed;
 	public float lastJumpPress;
 	public float lastJumpRelease;
-	public bool wasJumpPressedDuringOnbeat;
+
+	public UnityEvent onBoostJump;
+	public UnityEvent onHoverJump;
+	public UnityEvent onJumpEnd;
 
 	public bool isTailPressed;
 	public float lastTailPress;
@@ -28,7 +32,10 @@ public class PlayerController : MonoBehaviour
 	public float maxHoverTime;
 	public float jumpBufferTime;
 
+	public float tailStunBeats;
 	public float launchStunTime;
+
+	public float respawnTime;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -79,6 +86,11 @@ public class PlayerController : MonoBehaviour
 		_pawn.HoverJump();
 	}
 
+	public void EndJump()
+	{
+		_pawn.ClearJumpParticles();
+	}
+
 	public void HandleFalling()
 	{
 		_pawn.Fall();
@@ -91,6 +103,7 @@ public class PlayerController : MonoBehaviour
 
 	public void StartTailSwipe()
 	{
+		lastTailPressBeat = _quantizer.RoundToBeat(lastTailPress);
 		_pawn.SwipeTail(_stickVector);
 	}
 
@@ -107,6 +120,16 @@ public class PlayerController : MonoBehaviour
 	public void HandleTailLaunch()
 	{
 		_pawn.PullToTailEnd();
+	}
+
+	public void StartDeath()
+	{
+		_pawn.Die();
+	}
+
+	public void EndDeath()
+	{
+		_pawn.Respawn();
 	}
 
 
@@ -147,13 +170,22 @@ public class PlayerController : MonoBehaviour
 			lastJumpPress = conductor.songTime;
 			isJumpPressed = true;
 
-			//wasJumpPressedDuringOnbeat = Mathf.Round(_quantizer.Sec2Beat(lastJumpPress) - 0.25f) % 2 == 0;
+			if (WasEventOnBeat(lastJumpPress))
+			{
+				onBoostJump.Invoke();
+			}
+			else
+			{
+				onHoverJump.Invoke();
+			}
 		}
 		if (context.canceled)
 		{
 			// Record when the jump button was released
 			lastJumpRelease = conductor.songTime;
 			isJumpPressed = false;
+
+			onJumpEnd.Invoke();
 		}
 	}
 
@@ -164,7 +196,6 @@ public class PlayerController : MonoBehaviour
 		{
 			// Record when the tail button was pressed
 			lastTailPress = conductor.songTime;
-			lastTailPressBeat = _quantizer.RoundToBeat(lastTailPress);
 			isTailPressed = true;
 		}
 		if (context.canceled)
@@ -228,5 +259,10 @@ public class PlayerController : MonoBehaviour
 	public bool DidTouchSurface(out Vector3 surfaceNormal)
 	{
 		return _pawn.IsTouchingTerrain(out surfaceNormal);
+	}
+
+	public bool IsDead()
+	{
+		return _pawn.IsDead;
 	}
 }

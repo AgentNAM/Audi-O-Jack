@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 3
   tags:
   - Hazard
+  - Checkpoint
   layers:
   - Default
   - TransparentFX
@@ -15,8 +16,8 @@ TagManager:
   - Terrain
   - GrapplePoint
   - Player
-  - 
-  - 
+  - HardTerrain
+  - Hazard
   - 
   - 
   - 
